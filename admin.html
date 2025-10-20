@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TalkSphere</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .sidebar {
+            width: 280px;
+            transition: all 0.3s;
+        }
+        .sidebar-collapsed {
+            width: 80px;
+        }
+        .main-content {
+            margin-left: 280px;
+            transition: all 0.3s;
+        }
+        .main-content-collapsed {
+            margin-left: 80px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar bg-white shadow-md h-screen fixed">
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i data-feather="message-square" class="h-6 w-6 text-indigo-600 mr-2"></i>
+                        <span id="logo-text" class="text-xl font-bold text-indigo-600">TalkSphere</span>
+                    </div>
+                    <button id="sidebar-toggle" class="text-gray-500 hover:text-indigo-600">
+                        <i data-feather="chevron-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <div class="flex items-center mb-8">
+                    <img src="http://static.photos/people/200x200/5" alt="Admin" class="w-10 h-10 rounded-full mr-3">
+                    <div id="admin-info">
+                        <h3 class="font-semibold text-gray-800">Admin User</h3>
+                        <p class="text-xs text-gray-500">Super Admin</p>
+                    </div>
+                </div>
+
+                <nav>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 rounded-lg bg-indigo-50 text-indigo-600">
+                                <i data-feather="home" class="h-5 w-5"></i>
+                                <span id="dashboard-text" class="ml-3">Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">
+                                <i data-feather="users" class="h-5 w-5"></i>
+                                <span id="users-text" class="ml-3">Users</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">
+                                <i data-feather="message-square" class="h-5 w-5"></i>
+                                <span id="discussions-text" class="ml-3">Discussions</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">
+                                <i data-feather="calendar" class="h-5 w-5"></i>
+                                <span id="schedule-text" class="ml-3">Schedule</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">
+                                <i data-feather="settings" class="h-5 w-5"></i>
+                                <span id="settings-text" class="ml-3">Settings</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100">
+                                <i data-feather="help-circle" class="h-5 w-5"></i>
+                                <span id="help-text" class="ml-3">Help</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" class="main-content flex-1">
+            <!-- Top Navigation -->
+            <nav class="bg-white shadow-sm">
+                <div class="px-6 py-4">
+                    <div class="flex justify-between items-center">
+                        <h1 class="text-xl font-bold text-gray-800">Admin Dashboard</h1>
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-500 hover:text-indigo-600">
+                                <i data-feather="bell"></i>
+                            </button>
+                            <div class="relative">
+                                <img src="http://static.photos/people/200x200/5" alt="User" class="w-8 h-8 rounded-full cursor-pointer" id="admin-menu">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Dashboard Content -->
+            <div class="p-6">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Users</p>
+                                <h2 class="text-2xl font-bold text-gray-800">1,248</h2>
+                                <p class="text-sm text-green-500">+12% from last month</p>
+                            </div>
+                            <div class="bg-indigo-100 p-3 rounded-full">
+                                <i data-feather="users" class="h-6 w-6 text-indigo-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Active Discussions</p>
+                                <h2 class="text-2xl font-bold text-gray-800">86</h2>
+                                <p class="text-sm text-green-500">+5 active today</p>
+                            </div>
+                            <div class="bg-indigo-100 p-3 rounded-full">
+                                <i data-feather="message-square" class="h-6 w-6 text-indigo-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Scheduled Events</p>
+                                <h2 class="text-2xl font-bold text-gray-800">14</h2>
+                                <p class="text-sm text-blue-500">3 happening today</p>
+                            </div>
+                            <div class="bg-indigo-100 p-3 rounded-full">
+                                <i data-feather="calendar" class="h-6 w-6 text-indigo-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Reports</p>
+                                <h2 class="text-2xl font-bold text-gray-800">8</h2>
+                                <p class="text-sm text-red-500">3 new today</p>
+                            </div>
+                            <div class="bg-indigo-100 p-3 rounded-full">
+                                <i data-feather="flag" class="h-6 w-6 text-indigo-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity and Quick Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Recent Activity -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-lg font-bold text-gray-800">Recent Activity</h2>
+                                <a href="#" class="text-sm text-indigo-600 hover:text-indigo-800">View All</a>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="bg-indigo-100 p-2 rounded-full mr-4">
+                                        <i data-feather="user-plus" class="h-4 w-4 text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-800"><span class="font-semibold">Sarah Johnson</span> created a new account</p>
+                                        <p class="text-xs text-gray-500">30 minutes ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="bg-indigo-100 p-2 rounded-full mr-4">
+                                        <i data-feather="message-square" class="h-4 w-4 text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-800"><span class="font-semibold">Mark Williams</span> started a new discussion "Remote Work Tips"</p>
+                                        <p class="text-xs text-gray-500">2 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="bg-indigo-100 p-2 rounded-full mr-4">
+                                        <i data-feather="calendar" class="h-4 w-4 text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-800">New event "Tech Conference 2023" scheduled for November 15</p>
+                                        <p class="text-xs text-gray-500">5 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="bg-indigo-100 p-2 rounded-full mr-4">
+                                        <i data-feather="settings" class="h-4 w-4 text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-800">Site maintenance completed successfully</p>
+                                        <p class="text-xs text-gray-500">Yesterday</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div>
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h2 class="text-lg font-bold text-gray-800 mb-6">Quick Actions</h2>
+                            
+                            <div class="space-y-3">
+                                <button class="w-full flex items-center justify-between px-4 py-3 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition duration-300">
+                                    <span>Create New Discussion</span>
+                                    <i data-feather="plus" class="h-4 w-4"></i>
+                                </button>
+                                <button class="w-full flex items-center justify-between px-4 py-3 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition duration-300">
+                                    <span>Schedule Event</span>
+                                    <i data-feather="calendar" class="h-4 w-4"></i>
+                                </button>
+                                <button class="w-full flex items-center justify-between px-4 py-3 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition duration-300">
+                                    <span>Manage Topics</span>
+                                    <i data-feather="tag" class="h-4 w-4"></i>
+                                </button>
+                                <button class="w-full flex items-center justify-between px-4 py-3 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition duration-300">
+                                    <span>View Reports</span>
+                                    <i data-feather="flag" class="h-4 w-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- System Status -->
+                        <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+                            <h2 class="text-lg font-bold text-gray-800 mb-4">System Status</h2>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-700">Server Load</span>
+                                    <span class="text-sm font-medium text-green-500">Normal</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-700">Database</span>
+                                    <span class="text-sm font-medium text-green-500">Online</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-700">Uptime</span>
+                                    <span class="text-sm font-medium text-gray-700">99.98%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-700">Last Backup</span>
+                                    <span class="text-sm font-medium text-gray-700">Today, 03:00 AM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+        
+        // Sidebar toggle functionality
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            
+            sidebar.classList.toggle('sidebar-collapsed');
+            mainContent.classList.toggle('main-content-collapsed');
+            
+            // Change icon based on state
+            if (sidebar.classList.contains('sidebar-collapsed')) {
+                this.innerHTML = feather.icons['chevron-right'].toSvg();
+                // Hide text elements
+                document.querySelectorAll('[id$="-text"]').forEach(el => {
+                    el.style.display = 'none';
+                });
+                document.getElementById('admin-info').style.display = 'none';
+            } else {
+                this.innerHTML = feather.icons['chevron-left'].toSvg();
+                // Show text elements
+                document.querySelectorAll('[id$="-text"]').forEach(el => {
+                    el.style.display = 'inline-block';
+                });
+                document.getElementById('admin-info').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

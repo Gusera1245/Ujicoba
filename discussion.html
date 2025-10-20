@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion - TalkSphere</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .discussion-header {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('http://static.photos/technology/1200x630/1');
+            background-size: cover;
+            background-position: center;
+        }
+        .comment-box {
+            transition: all 0.3s ease;
+        }
+        .comment-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i data-feather="message-square" class="h-6 w-6 text-indigo-600 mr-2"></i>
+                    <span class="text-xl font-bold text-indigo-600">TalkSphere</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-700 hover:text-indigo-600">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-indigo-600">Topics</a>
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition duration-300">
+                        Join Discussion
+                    </button>
+                    <img src="http://static.photos/people/200x200/5" alt="User" class="w-8 h-8 rounded-full">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Discussion Header -->
+    <div class="discussion-header text-white py-16">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center mb-4">
+                <span class="bg-indigo-600 text-xs px-3 py-1 rounded-full mr-2">Technology</span>
+                <span class="text-sm">Live Now • 124 participants</span>
+            </div>
+            <h1 class="text-4xl font-bold mb-4">The Future of Artificial Intelligence: Opportunities and Challenges</h1>
+            <div class="flex items-center">
+                <img src="http://static.photos/people/200x200/7" alt="Host" class="w-10 h-10 rounded-full mr-3">
+                <div>
+                    <p class="font-medium">Hosted by Dr. Emily Chen</p>
+                    <p class="text-sm text-gray-300">AI Researcher at TechFuture Labs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discussion Content -->
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex items-start mb-6">
+                <img src="http://static.photos/people/200x200/7" alt="Host" class="w-12 h-12 rounded-full mr-4">
+                <div>
+                    <div class="flex items-center mb-2">
+                        <h3 class="font-bold text-gray-800 mr-2">Dr. Emily Chen</h3>
+                        <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">Host</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">Welcome everyone to today's discussion! AI is transforming industries at an unprecedented pace. While this brings incredible opportunities, it also presents challenges we must address - from ethical concerns to job displacement. Let's explore both sides thoughtfully.</p>
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                        <span>Posted 2 hours ago</span>
+                        <button class="flex items-center hover:text-indigo-600">
+                            <i data-feather="message-square" class="h-4 w-4 mr-1"></i> 42 comments
+                        </button>
+                        <button class="flex items-center hover:text-indigo-600">
+                            <i data-feather="heart" class="h-4 w-4 mr-1"></i> 86 likes
+                        </button>
+                        <button class="flex items-center hover:text-indigo-600">
+                            <i data-feather="share-2" class="h-4 w-4 mr-1"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comment Form -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-lg font-medium text-gray-800 mb-4">Join the Discussion</h3>
+            <form>
+                <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-transparent mb-4" placeholder="Share your thoughts..." rows="3"></textarea>
+                <div class="flex justify-between items-center">
+                    <div class="flex space-x-2">
+                        <button type="button" class="text-gray-500 hover:text-indigo-600 p-2 rounded-full hover:bg-gray-100">
+                            <i data-feather="image"></i>
+                        </button>
+                        <button type="button" class="text-gray-500 hover:text-indigo-600 p-2 rounded-full hover:bg-gray-100">
+                            <i data-feather="link"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition duration-300">
+                        Post Comment
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Comments Section -->
+        <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Comments (42)</h3>
+            
+            <!-- Comment 1 -->
+            <div class="comment-box bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-start mb-4">
+                    <img src="http://static.photos/people/200x200/3" alt="User" class="w-10 h-10 rounded-full mr-4">
+                    <div>
+                        <div class="flex items-center mb-1">
+                            <h4 class="font-semibold text-gray-800 mr-2">Michael Rodriguez</h4>
+                            <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">Tech Lead</span>
+                        </div>
+                        <p class="text-sm text-gray-500">Posted 1 hour ago</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 mb-4">Great topic! The job displacement concern is real, but I believe AI will create more jobs than it eliminates. We're already seeing new roles like AI trainers and ethicists emerge. The key is proper reskilling programs.</p>
+                <div class="flex items-center space-x-4 text-sm">
+                    <button class="flex items-center text-gray-500 hover:text-indigo-600">
+                        <i data-feather="heart" class="h-4 w-4 mr-1"></i> 12 likes
+                    </button>
+                    <button class="flex items-center text-gray-500 hover:text-indigo-600">
+                        <i data-feather="message-square" class="h-4 w-4 mr-1"></i> Reply
+                    </button>
+                </div>
+            </div>
+
+            <!-- Comment 2 -->
+            <div class="comment-box bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-start mb-4">
+                    <img src="http://static.photos/people/200x200/4" alt="User" class="w-10 h-10 rounded-full mr-4">
+                    <div>
+                        <div class="flex items-center mb-1">
+                            <h4 class="font-semibold text-gray-800 mr-2">Sarah Johnson</h4>
+                            <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">Ethics Researcher</span>
+                        </div>
+                        <p class="text-sm text-gray-500">Posted 45 minutes ago</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 mb-4">While technological progress is exciting, we can't ignore the ethical implications. Bias in AI systems is a major concern - if training data reflects societal biases, the AI will perpetuate them. We need more diverse teams building these systems and rigorous testing protocols.</p>
+                <div class="flex items-center space-x-4 text-sm">
+                    <button class="flex items-center text-gray-500 hover:text-indigo-600">
+                        <i data-feather="heart" class="h-4 w-4 mr-1"></i> 8 likes
+                    </button>
+                    <button class="flex items-center text-gray-500 hover:text-indigo-600">
+                        <i data-feather="message-square" class="h-4 w-4 mr-1"></i> Reply
+                    </button>
+                </div>
+
+                <!-- Reply 1 -->
+                <div class="comment-box bg-gray-50 rounded-lg p-4 mt-4 ml-10">
+                    <div class="flex items-start mb-2">
+                        <img src="http://static.photos/people/200x200/7" alt="Host" class="w-8 h-8 rounded-full mr-3">
+                        <div>
+                            <div class="flex items-center mb-1">
+                                <h4 class="font-semibold text-gray-800 text-sm mr-2">Dr. Emily Chen</h4>
+                                <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">Host</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Posted 30 minutes ago</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 text-sm mb-2">Excellent point, Sarah! At our lab, we've implemented bias detection algorithms that run parallel to our main models. It adds overhead but helps catch issues early.</p>
+                    <div class="flex items-center space-x-4 text-xs">
+                        <button class="flex items-center text-gray-500 hover:text-indigo-600">
+                            <i data-feather="heart" class="h-3 w-3 mr-1"></i> 3 likes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comment 3 -->
+            <div class="comment-box bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-start mb-4">
+                    <img src="http://static.photos/people/200x200/2" alt="User" class="w-10 h-10 rounded-full mr-4">
+                    <div>
+                        <div class="flex items-center mb-1">
+                            <h4 class="font-semibold text-gray-800 mr-2">David Kim</h4>
+                            <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">Startup Founder</span>
+                        </div>
+                        <p class="text-sm text-gray-500">Posted 20 minutes ago</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 mb-4">The healthcare applications are most exciting to me. AI is helping diagnose diseases earlier and with higher accuracy than many specialists. My company is working on an AI that can detect early-stage lung cancer from CT scans with 96% accuracy - something that could save thousands of lives annually.</p>
+                <div class="flex items-center space-x-4 text-sm">
+                    <button class="flex items-center text-gray-500 hover:text-indigo-600">
+                        <i data-feather="heart" class="h-4 w-4 mr-1"></i> 15 likes
+                    </button>
+                    <button class="flex items-center text-gray-500 hover:text-indigo-600">
+                        <i data-feather="message-square" class="h-4 w-4 mr-1"></i> Reply
+                    </button>
+                </div>
+            </div>
+
+            <!-- Load More Comments -->
+            <div class="text-center">
+                <button class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition duration-300 border border-gray-300">
+                    Load More Comments
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Participants Sidebar (would be fixed on larger screens) -->
+    <div class="bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto mb-8">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Participants (124)</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+            <div class="text-center">
+                <img src="http://static.photos/people/200x200/1" alt="Participant" class="w-12 h-12 rounded-full mx-auto mb-2">
+                <p class="text-xs text-gray-700 truncate">Sarah J.</p>
+            </div>
+            <div class="text-center">
+                <img src="http://static.photos/people/200x200/2" alt="Participant" class="w-12 h-12 rounded-full mx-auto mb-2">
+                <p class="text-xs text-gray-700 truncate">Michael R.</p>
+            </div>
+            <div class="text-center">
+                <img src="http://static.photos/people/200x200/3" alt="Participant" class="w-12 h-12 rounded-full mx-auto mb-2">
+                <p class="text-xs text-gray-700 truncate">Emma D.</p>
+            </div>
+            <div class="text-center">
+                <img src="http://static.photos/people/200x200/4" alt="Participant" class="w-12 h-12 rounded-full mx-auto mb-2">
+                <p class="text-xs text-gray-700 truncate">David K.</p>
+            </div>
+            <div class="text-center">
+                <img src="http://static.photos/people/200x200/5" alt="Participant" class="w-12 h-12 rounded-full mx-auto mb-2">
+                <p class="text-xs text-gray-700 truncate">Alex J.</p>
+            </div>
+            <div class="text-center">
+                <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <span class="text-indigo-600 font-medium">+119</span>
+                </div>
+                <p class="text-xs text-gray-700">Others</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>
