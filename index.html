@@ -17,11 +17,16 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        /* Style untuk membuat konten menumpuk di atas Vanta.js */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
     <div id="vanta-bg" class="fixed inset-0 z-0"></div>
-    <div class="relative min-h-screen flex flex-col">
+    <div class="relative min-h-screen flex flex-col content-wrapper">
         <nav class="bg-white bg-opacity-90 backdrop-filter backdrop-blur-lg shadow-sm z-10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
@@ -29,176 +34,75 @@
                         <i data-feather="message-square" class="h-6 w-6 text-indigo-600 mr-2"></i>
                         <span class="text-xl font-bold text-indigo-600">TalkSphere</span>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <a href="#" class="text-gray-600 hover:text-indigo-600 font-medium">Beranda</a>
-                        <a href="#" class="text-gray-600 hover:text-indigo-600 font-medium">Topik</a>
-                        <a href="#" class="text-gray-600 hover:text-indigo-600 font-medium">Jadwal</a>
-                        <a href="#" class="text-gray-600 hover:text-indigo-600 font-medium">Admin</a>
-                        
-                        <a href="login.html" class="px-4 py-2 text-sm font-medium rounded-lg text-indigo-600 border border-indigo-600 hover:bg-indigo-600 hover:text-white transition duration-300">
-                            Login
-                        </a>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                        <a href="#" class="text-gray-900 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Fitur</a>
+                        <a href="#" class="text-gray-900 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Komunitas</a>
+                        <a href="#" class="text-gray-900 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Bantuan</a>
+                    </div>
+                    <div class="flex items-center">
+                        <button id="auth-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition duration-300 shadow-md">
+                            Login / Daftar
+                        </button>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <main class="flex-grow flex items-center justify-center z-10 py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center fade-in">
-                <div class="flex flex-col md:flex-row items-center justify-between">
-                    <div class="md:w-1/2 text-left mb-10 md:mb-0">
-                        <h1 class="text-5xl md:text-6xl font-extrabold text-gray-800 leading-tight">Bergabung dalam Percakapan</h1>
-                        <p class="mt-4 text-xl text-gray-600">Ikuti diskusi bermakna, bagikan pemikiran Anda, dan terhubung dengan orang-orang yang berpikiran sama di TalkSphere.</p>
-                        <div class="mt-8 space-x-4">
-                            <a href="#" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:bg-indigo-700 transition duration-300">Mulai Sekarang</a>
-                            <a href="#about" class="text-indigo-600 border border-indigo-600 px-6 py-3 rounded-lg font-medium hover:bg-indigo-50 transition duration-300">Pelajari Lebih Lanjut</a>
-                        </div>
-                    </div>
-                    <div class="md:w-1/2 flex justify-center">
-                        <img src="http://static.photos/technology/640x360/1" alt="Discussion" class="rounded-xl shadow-2xl max-w-full h-auto">
-                    </div>
+        <main class="flex-grow flex items-center justify-center p-4">
+            <div class="max-w-4xl mx-auto text-center z-10 fade-in">
+                <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-4">
+                    Pusat Diskusi Dinamis <span class="text-indigo-600">TalkSphere</span>
+                </h1>
+                <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+                    Platform tempat ide-ide cemerlang bertemu. Diskusikan, buat, dan perluas wawasan Anda bersama komunitas yang bersemangat.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <a href="register.html" class="bg-indigo-600 text-white text-lg px-8 py-3 rounded-full font-semibold hover:bg-indigo-700 transition duration-300 shadow-xl transform hover:scale-105">
+                        Mulai Sekarang
+                    </a>
+                    <a href="discussion.html" class="bg-white text-indigo-600 text-lg px-8 py-3 rounded-full font-semibold border-2 border-indigo-600 hover:bg-indigo-50 transition duration-300 shadow-xl transform hover:scale-105">
+                        Lihat Demo
+                    </a>
                 </div>
             </div>
         </main>
 
-        <section id="live-discussions" class="py-16 bg-white z-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center mb-10">
-                    <h2 class="text-3xl font-bold text-gray-800">Diskusi Langsung</h2>
-                    <a href="#" class="text-indigo-600 font-medium hover:text-indigo-800">Lihat Semua</a>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-gray-100">
-                        <div class="flex items-center mb-4">
-                            <img src="http://static.photos/people/200x200/1" alt="User" class="w-12 h-12 rounded-full mr-4 border-2 border-indigo-500">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-800">Inovasi Teknologi 2023</h3>
-                                <p class="text-sm text-gray-500">Dipandu oleh Sarah Johnson</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-600 mb-4">Membahas kemajuan teknologi terbaru dan dampaknya terhadap masyarakat.</p>
-                        <div class="flex justify-between items-center text-sm text-gray-500">
-                            <div class="flex items-center">
-                                <i data-feather="users" class="h-4 w-4 mr-1"></i>
-                                <span>42 peserta</span>
-                            </div>
-                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full font-medium">Sedang Berlangsung</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-gray-100">
-                        <div class="flex items-center mb-4">
-                            <img src="http://static.photos/people/200x200/2" alt="User" class="w-12 h-12 rounded-full mr-4 border-2 border-indigo-500">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-800">Hidup Berkelanjutan</h3>
-                                <p class="text-sm text-gray-500">Dipandu oleh Mark Williams</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-600 mb-4">Menjelajahi cara hidup lebih berkelanjutan dan mengurangi jejak lingkungan kita.</p>
-                        <div class="flex justify-between items-center text-sm text-gray-500">
-                            <div class="flex items-center">
-                                <i data-feather="users" class="h-4 w-4 mr-1"></i>
-                                <span>28 participants</span>
-                            </div>
-                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full font-medium">Live Now</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-gray-100">
-                        <div class="flex items-center mb-4">
-                            <img src="http://static.photos/people/200x200/3" alt="User" class="w-12 h-12 rounded-full mr-4 border-2 border-indigo-500">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-800">Masa Depan Pekerjaan</h3>
-                                <p class="text-sm text-gray-500">Dipandu oleh Emma Davis</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-600 mb-4">Bagaimana kerja jarak jauh dan otomatisasi mengubah lanskap profesional.</p>
-                        <div class="flex justify-between items-center text-sm text-gray-500">
-                            <div class="flex items-center">
-                                <i data-feather="users" class="h-4 w-4 mr-1"></i>
-                                <span>35 peserta</span>
-                            </div>
-                            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full font-medium">Mulai dalam 2 jam</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="schedule" class="py-16 bg-gray-100 z-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center mb-10">
-                    <h2 class="text-3xl font-bold text-gray-800">Jadwal Mendatang</h2>
-                    <a href="#" class="text-indigo-600 font-medium hover:text-indigo-800">Lihat Jadwal Lengkap</a>
-                </div>
-                <div class="space-y-6">
-                    <div class="flex bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-600">
-                        <div class="flex-shrink-0 mr-6 text-center">
-                            <p class="text-lg font-bold text-gray-800">Besok</p>
-                            <p class="text-sm text-indigo-600">10:00</p>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-xl text-gray-800 mb-1">Tren Pemasaran Digital</h3>
-                            <p class="text-gray-600">Mengeksplorasi tren terbaru dalam pemasaran digital untuk 2023.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-600">
-                        <div class="flex-shrink-0 mr-6 text-center">
-                            <p class="text-lg font-bold text-gray-800">Rabu</p>
-                            <p class="text-sm text-indigo-600">14:00</p>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-xl text-gray-800 mb-1">Kesadaran Kesehatan Mental</h3>
-                            <p class="text-gray-600">Diskusi tentang tantangan kesehatan mental dan strategi mengatasinya.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-600">
-                        <div class="flex-shrink-0 mr-6 text-center">
-                            <p class="text-lg font-bold text-gray-800">Jumat</p>
-                            <p class="text-sm text-indigo-600">16:30</p>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-xl text-gray-800 mb-1">Etika AI</h3>
-                            <p class="text-gray-600">Implikasi etis dari pengembangan kecerdasan buatan.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <footer class="bg-gray-800 z-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <footer class="bg-gray-900 text-white z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div>
-                        <h3 class="text-xl font-bold text-white mb-4">TalkSphere</h3>
-                        <p class="text-gray-400 text-sm">Menghubungkan pikiran melalui percakapan bermakna.</p>
+                        <div class="flex items-center mb-4">
+                            <i data-feather="message-square" class="h-6 w-6 text-indigo-400 mr-2"></i>
+                            <span class="text-xl font-bold text-white">TalkSphere</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">
+                            Platform diskusi yang mengutamakan kualitas, keterbukaan, dan inovasi ide.
+                        </p>
                     </div>
 
                     <div>
-                        <h4 class="text-lg font-semibold text-white mb-4">Tautan Cepat</h4>
-                        <ul class="space-y-2">
-                            <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition duration-300">Beranda</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition duration-300">Topik</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition duration-300">Jadwal</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition duration-300">Komunitas</a></li>
+                        <h3 class="text-lg font-semibold mb-4">Link Cepat</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li><a href="#" class="hover:text-indigo-400">Tentang Kami</a></li>
+                            <li><a href="#" class="hover:text-indigo-400">Fitur Premium</a></li>
+                            <li><a href="#" class="hover:text-indigo-400">Blog</a></li>
+                            <li><a href="#" class="hover:text-indigo-400">Karir</a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="text-lg font-semibold text-white mb-4">Sumber Daya</h4>
-                        <ul class="space-y-2">
-                            <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition duration-300">Pusat Bantuan</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition duration-300">Panduan</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition duration-300">Kebijakan Privasi</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition duration-300">Syarat Layanan</a></li>
+                        <h3 class="text-lg font-semibold mb-4">Dukungan</h3>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li><a href="#" class="hover:text-indigo-400">Pusat Bantuan</a></li>
+                            <li><a href="#" class="hover:text-indigo-400">Kebijakan Privasi</a></li>
+                            <li><a href="#" class="hover:text-indigo-400">Syarat Layanan</a></li>
+                            <li><a href="#" class="hover:text-indigo-400">Hubungi Kami</a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="text-lg font-semibold text-white mb-4">Hubungi Kami</h4>
-                        <p class="text-gray-400 text-sm mb-3">Berlangganan newsletter kami</p>
+                        <h3 class="text-lg font-semibold mb-4">Berlangganan Newsletter</h3>
+                        <p class="text-gray-400 text-sm mb-3">Dapatkan pembaruan terbaru langsung di kotak masuk Anda.</p>
                         <div class="flex mt-2">
                             <input type="email" placeholder="Email Anda" class="px-3 py-2 bg-gray-700 text-white rounded-l focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full">
                             <button class="bg-indigo-600 text-white px-4 py-2 rounded-r hover:bg-indigo-700">Berlangganan</button>
@@ -206,8 +110,8 @@
                     </div>
                 </div>
                 <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2023 TalkSphere. Seluruh hak cipta dilindungi.</p>
-</div>
+                    <p>&copy; 2023 TalkSphere. Seluruh hak cipta dilindungi.</p>
+                </div>
             </div>
         </footer>
     </div>
@@ -232,8 +136,10 @@
         // Initialize feather icons
         feather.replace();
         
-        // PERBAIKAN 2: Kode JavaScript yang menampilkan alert placeholder telah dihapus
-        // Kini, tombol Login di navbar akan langsung berfungsi sebagai link ke login.html
+        // Login button functionality
+        document.getElementById('auth-btn').addEventListener('click', function() {
+            window.location.href = 'login.html'; 
+        });
     </script>
 </body>
 </html>
