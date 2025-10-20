@@ -8,16 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     
-    <!-- FIREBASE LIBRARIES (Menggunakan versi 8 untuk konsistensi, di-load di <head>) -->
+    <!-- FIREBASE LIBRARIES -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
-        /* Menggunakan font Inter untuk tampilan yang lebih modern */
         body { font-family: 'Inter', sans-serif; }
         .discussion-header {
-            /* Membuat background agar tidak terpotong */
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('http://static.photos/technology/1200x630/1');
             background-size: cover;
             background-position: center;
@@ -29,7 +27,6 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
-        /* Custom scrollbar untuk kotak komentar */
         #comments-list {
             max-height: 800px;
             overflow-y: auto;
@@ -53,14 +50,14 @@
                     <span class="text-xl font-bold text-indigo-600">TalkSphere</span>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <!-- Tombol Notifikasi -->
+                    <!-- Tombol Notifikasi (Tamu) -->
                     <button id="notification-bell" class="text-gray-600 hover:text-indigo-600 relative">
                         <i data-feather="bell" class="h-6 w-6"></i>
                         <span id="notif-badge" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full hidden">0</span>
                     </button>
                     <a href="profile.html" class="flex items-center space-x-2">
                         <img id="user-avatar-nav" class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/100x100/A8A29E/ffffff?text=U" alt="User Avatar">
-                        <span id="user-name-nav" class="hidden sm:inline text-sm font-medium text-gray-700">Tamu</span>
+                        <span id="user-name-nav" class="hidden sm:inline text-sm font-medium text-gray-700">Memuat...</span>
                     </a>
                 </div>
             </div>
@@ -74,7 +71,6 @@
             <h1 class="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">Mengeksplorasi Masa Depan Kecerdasan Buatan dan Etikanya</h1>
             <p class="text-gray-300 text-lg mb-4">Sebuah diskusi mendalam mengenai potensi tak terbatas AI dan tantangan moral yang menyertainya.</p>
             <div class="flex items-center text-sm">
-                <!-- UID penulis yang harus diganti oleh user -->
                 <p class="mr-4">Dibuat oleh: <span id="author-uid" data-uid="USER_ID_JANE_DOE" class="font-medium text-indigo-300">Jane Doe</span></p> 
                 <p><span id="total-comments">0</span> Komentar | 120 Views</p>
             </div>
@@ -105,7 +101,7 @@
                 <button class="flex items-center bg-gray-200 text-gray-700 px-4 py-2 rounded-full font-medium hover:bg-gray-300 transition duration-300">
                     <i data-feather="bookmark" class="h-5 w-5 mr-2"></i> Simpan
                 </button>
-                <button id="like-button" class="flex items-center text-gray-700 hover:text-indigo-600 transition duration-300">
+                <button id="like-button" class="flex items-center text-gray-700 hover:text-indigo-600 transition duration-300" disabled>
                     <i data-feather="heart" class="h-5 w-5 mr-2"></i> 
                     <span id="like-count">0</span> Likes
                 </button>
@@ -119,10 +115,15 @@
                 <div class="bg-white p-6 rounded-lg shadow-lg mb-8" id="comment-form-container">
                     <p class="font-semibold mb-3">Tinggalkan Komentar Anda:</p>
                     <textarea id="comment-text" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 resize-none" rows="3" placeholder="Tulis komentar yang membangun di sini..."></textarea>
+                    
+                    <div id="auth-status-message" class="mt-3 text-sm flex items-center">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 mr-2"></div>
+                        <span class="text-gray-600">Memeriksa status login...</span>
+                    </div>
+
                     <button id="submit-comment" class="mt-3 bg-indigo-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-indigo-700 transition duration-300 disabled:opacity-50" disabled>
                         Kirim Komentar
                     </button>
-                    <p id="auth-warning" class="text-sm text-red-500 mt-2 hidden">Anda harus Login untuk mengirim komentar.</p>
                     <p id="comment-error" class="text-sm text-red-500 mt-2 hidden"></p>
                 </div>
 
@@ -138,10 +139,8 @@
             </section>
         </main>
 
-        <!-- Kolom Samping (Sidebar) -->
+        <!-- Kolom Samping (Sidebar) - Statis -->
         <aside class="w-full md:w-1/3">
-            
-            <!-- Informasi Diskusi Cepat -->
             <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Ringkasan Diskusi</h3>
                 <ul class="space-y-3 text-gray-700 text-sm">
@@ -163,8 +162,6 @@
                     </li>
                 </ul>
             </div>
-            
-            <!-- Peserta Aktif (Statis) -->
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Peserta Aktif (6/20)</h3>
                 <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -216,7 +213,6 @@
         // ------------------------------------------------------------------
         // FIREBASE CONFIGURATION (Mengambil dari variabel global Canvas)
         // ------------------------------------------------------------------
-        // Inisialisasi konfigurasi dari variabel global
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         let firebaseConfig = null;
         try {
@@ -238,28 +234,27 @@
             // firebase.firestore.setLogLevel('debug');
         } else {
             console.error("Firebase tidak diinisialisasi: Konfigurasi tidak ditemukan atau tidak valid.");
-            // Buat objek dummy jika Firebase gagal inisialisasi agar kode tidak error
-            app = {}; auth = { onAuthStateChanged: (cb) => cb(null), currentUser: null }; db = {};
+            // Objek dummy jika Firebase gagal inisialisasi
+            auth = { onAuthStateChanged: (cb) => cb(null), currentUser: null }; 
+            db = {};
         }
 
-        // --- KONSTANTA DISKUSI ---
-        const DISCUSSION_ID = "mengeksplorasi_ai_dan_etika"; // ID Dokumen di koleksi 'discussions'
-        const authorUid = document.getElementById('author-uid').getAttribute('data-uid');
+        // --- KONSTANTA & ELEMEN UI ---
+        const DISCUSSION_ID = "mengeksplorasi_ai_dan_etika";
         const likeButton = document.getElementById('like-button');
-        const likeCountSpan = document.getElementById('like-count');
-        const notifBadge = document.getElementById('notif-badge');
-        const commentsList = document.getElementById('comments-list');
         const submitCommentButton = document.getElementById('submit-comment');
         const commentTextInput = document.getElementById('comment-text');
-        const authWarning = document.getElementById('auth-warning');
+        const authStatusMessage = document.getElementById('auth-status-message');
+        const commentsList = document.getElementById('comments-list');
+        const likeCountSpan = document.getElementById('like-count');
         const commentCountDisplay = document.getElementById('comment-count-display');
         const totalCommentsHeader = document.getElementById('total-comments');
 
-        let currentUser = null; // Menyimpan objek pengguna yang login
-
+        let currentUser = null; 
+        
+        // ... (timeAgo, toggleLike, submitComment, renderComment, handleDeleteComment, listenToComments tetap sama) ...
         // Utility untuk format waktu
         function timeAgo(timestamp) {
-            // Jika timestamp berupa objek Firestore Timestamp
             if (timestamp && typeof timestamp.toDate === 'function') {
                 const now = Date.now();
                 const past = timestamp.toDate().getTime();
@@ -279,26 +274,24 @@
             }
             return 'Waktu tidak tersedia';
         }
-        
+
         // --- FUNGSI LIKE/BATAL LIKE ---
         function toggleLike() {
             const user = auth.currentUser;
             if (!user) {
                 console.warn("User not authenticated. Cannot perform like action.");
-                // Menggunakan console.error untuk pesan yang lebih menonjol daripada alert()
                 document.getElementById('comment-error').textContent = "Anda harus login untuk interaksi.";
                 document.getElementById('comment-error').classList.remove('hidden');
                 return;
             }
 
-            // Path menggunakan userId dari Canvas
             const discussionRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('discussions').doc(DISCUSSION_ID);
             const userId = user.uid;
 
             db.runTransaction(async (transaction) => {
                 const doc = await transaction.get(discussionRef);
                 if (!doc.exists) { 
-                    throw new Error("Dokumen Diskusi tidak ditemukan. Pastikan ID diskusi benar dan dokumen ada."); 
+                    throw new Error("Dokumen Diskusi tidak ditemukan."); 
                 }
 
                 const data = doc.data();
@@ -359,20 +352,17 @@
             submitCommentButton.textContent = "Mengirim...";
 
             try {
-                // Path ke koleksi komentar: artifacts/{appId}/public/data/discussions/{discussionId}/comments
                 const commentsCollectionRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('discussions').doc(DISCUSSION_ID).collection('comments');
 
                 await commentsCollectionRef.add({
                     userId: currentUser.uid,
-                    // Fallback nama jika displayName tidak ada
                     userName: currentUser.displayName || `User-${currentUser.uid.substring(0, 5)}`, 
-                    // Fallback avatar
                     userAvatar: currentUser.photoURL || `https://placehold.co/100x100/A8A29E/ffffff?text=${currentUser.displayName ? currentUser.displayName[0] : 'U'}`,
                     text: text,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     repliesCount: 0,
                     likesCount: 0,
-                    isDeleted: false // Soft delete flag
+                    isDeleted: false
                 });
 
                 commentTextInput.value = '';
@@ -383,7 +373,6 @@
                 document.getElementById('comment-error').classList.remove('hidden');
                 submitCommentButton.textContent = "Kirim Komentar";
             } finally {
-                // Tombol akan diaktifkan kembali oleh onAuthStateChanged setelah proses selesai
                 if (currentUser) {
                     submitCommentButton.disabled = false;
                 }
@@ -392,7 +381,6 @@
         
         // --- FUNGSI MERENDER KOMENTAR ---
         function renderComment(commentData, docId) {
-            // Hanya render jika belum dihapus secara lunak
             if (commentData.isDeleted) return null; 
 
             const timeString = timeAgo(commentData.createdAt);
@@ -400,7 +388,6 @@
             const userName = commentData.userName || 'Pengguna Anonim';
             const isOwner = currentUser && currentUser.uid === commentData.userId;
 
-            // Elemen utama komentar
             const commentElement = document.createElement('div');
             commentElement.id = `comment-${docId}`;
             commentElement.className = `comment-box bg-white p-4 rounded-lg shadow-md mb-4 border border-gray-200`;
@@ -429,9 +416,8 @@
                 </div>
             `;
             commentElement.innerHTML = content;
-            feather.replace(); // Re-render feather icons
+            feather.replace();
 
-            // Tambahkan event listener untuk tombol hapus
             if (isOwner) {
                 commentElement.querySelector('.delete-comment-btn').addEventListener('click', handleDeleteComment);
             }
@@ -444,18 +430,15 @@
             const commentId = event.currentTarget.getAttribute('data-comment-id');
             if (!commentId || !currentUser) return;
 
-            // Menggunakan custom modal sederhana (menggantikan alert)
             if (!confirm("Apakah Anda yakin ingin menghapus komentar ini?")) return;
 
             try {
                 const commentRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('discussions').doc(DISCUSSION_ID).collection('comments').doc(commentId);
                 
-                // Melakukan Soft Delete (disarankan di Firestore)
                 await commentRef.update({ 
                     isDeleted: true,
                     deletedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                console.log(`Komentar ${commentId} berhasil dihapus (soft delete).`);
 
             } catch (error) {
                 console.error("Gagal menghapus komentar:", error);
@@ -467,16 +450,15 @@
 
         // --- FUNGSI MENDENGARKAN KOMENTAR REAL-TIME ---
         function listenToComments() {
-             // Path ke koleksi komentar: artifacts/{appId}/public/data/discussions/{discussionId}/comments
+            if (!db) return;
             const commentsRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('discussions').doc(DISCUSSION_ID).collection('comments');
-            const query = commentsRef.where('isDeleted', '!=', true).orderBy('isDeleted', 'asc').orderBy('createdAt', 'desc'); // Urutkan terbaru di atas
+            const query = commentsRef.where('isDeleted', '!=', true).orderBy('isDeleted', 'asc').orderBy('createdAt', 'desc');
 
             const loadingEl = document.getElementById('loading-comments');
             if (loadingEl) loadingEl.classList.remove('hidden');
 
-            // onSnapshot untuk pembaruan real-time
             query.onSnapshot(snapshot => {
-                commentsList.innerHTML = ''; // Kosongkan daftar sebelum merender ulang
+                commentsList.innerHTML = '';
                 let commentCount = 0;
                 
                 snapshot.forEach(doc => {
@@ -489,7 +471,6 @@
                     }
                 });
                 
-                // Update hitungan total komentar
                 commentCountDisplay.textContent = commentCount;
                 totalCommentsHeader.textContent = commentCount;
 
@@ -502,26 +483,23 @@
             });
         }
 
-        // --- FUNGSI INISIALISASI ---
+        // --- FUNGSI INISIALISASI UTAMA ---
         function initializeDiscussion() {
-            if (!db || !auth) return; // Keluar jika Firebase gagal inisialisasi
+            if (!db) return; 
 
             likeButton.addEventListener('click', toggleLike);
             submitCommentButton.addEventListener('click', submitComment);
-            
-            // Scroll ke form komentar saat tombol diklik
             document.getElementById('scroll-to-comment').addEventListener('click', () => {
                 document.getElementById('comment-form-container').scrollIntoView({ behavior: 'smooth' });
                 commentTextInput.focus();
             });
 
-            // 1. Data Like Diskusi (Real-time) - Path menyesuaikan dengan public data
+            // 1. Data Like Diskusi (Real-time)
             const discussionRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('discussions').doc(DISCUSSION_ID);
             discussionRef.onSnapshot(doc => { 
                 if (doc.exists) {
                     const data = doc.data();
                     likeCountSpan.textContent = data.likesCount || 0;
-
                     if (currentUser) {
                         const likedBy = data.likedBy || [];
                         if (likedBy.includes(currentUser.uid)) {
@@ -532,9 +510,9 @@
                             likeButton.classList.add('text-gray-700');
                         }
                     }
+                    likeButton.disabled = false; // Aktifkan tombol like
                 } else {
-                    console.warn(`Dokumen diskusi (${DISCUSSION_ID}) tidak ditemukan. Membuat dokumen placeholder.`);
-                    // Membuat dokumen diskusi jika belum ada, agar fitur like/comment berfungsi
+                    // Membuat dokumen diskusi jika belum ada
                     discussionRef.set({ 
                         title: "Mengeksplorasi Masa Depan Kecerdasan Buatan dan Etikanya",
                         likesCount: 0,
@@ -550,73 +528,62 @@
 
         // --- TITIK MASUK UTAMA: Cek Status Otentikasi & Inisialisasi ---
         async function setupAuthAndInitialize() {
-             if (auth && initialAuthToken) {
-                try {
-                    // Coba sign in dengan custom token
+            if (!auth) {
+                 authStatusMessage.innerHTML = '<span class="text-red-500">Error: Firebase tidak terinisialisasi.</span>';
+                 return;
+            }
+            
+            // Coba sign-in
+            try {
+                if (initialAuthToken) {
                     await auth.signInWithCustomToken(initialAuthToken);
-                } catch (error) {
-                    console.error("Gagal sign in dengan custom token:", error);
-                    // Jika gagal, coba sign in secara anonim sebagai fallback
-                    try {
-                        await auth.signInAnonymously();
-                    } catch (anonError) {
-                        console.error("Gagal sign in secara anonim:", anonError);
-                    }
+                } else {
+                    await auth.signInAnonymously();
                 }
-            } else if (auth) {
-                 // Jika tidak ada token (misalnya, saat testing lokal), sign in anonim
+            } catch (error) {
+                console.warn("Gagal sign-in dengan token kustom, mencoba anonim:", error);
                 try {
+                    // Fallback ke sign-in anonim
                     await auth.signInAnonymously();
                 } catch (anonError) {
-                    console.error("Gagal sign in secara anonim:", anonError);
+                    console.error("Gagal sign-in secara anonim:", anonError);
                 }
             }
             
-            // Listener untuk memastikan UI diperbarui setiap kali status auth berubah
+            // Listener untuk memantau status autentikasi
             auth.onAuthStateChanged(function(user) {
-                currentUser = user; // Set pengguna global
+                currentUser = user; 
 
                 if (user) {
-                    // Pengguna terautentikasi
+                    // PENGGUNA MASUK (TERAUTENTIKASI / ANONIM)
                     const userName = user.displayName || `User-${user.uid.substring(0, 5)}`;
                     const userInitial = userName[0].toUpperCase();
-                    // Gunakan URL avatar placeholder yang lebih baik jika tidak ada photoURL
                     const userAvatar = user.photoURL || `https://placehold.co/100x100/4F46E5/ffffff?text=${userInitial}`;
 
                     // Update UI Navigasi
                     document.getElementById('user-name-nav').textContent = userName;
                     document.getElementById('user-avatar-nav').src = userAvatar;
-                    document.getElementById('user-avatar-nav').alt = userName;
                     
                     // Kontrol Form Komentar
                     submitCommentButton.disabled = false;
-                    authWarning.classList.add('hidden');
+                    authStatusMessage.innerHTML = `<span class="text-green-600">Login berhasil sebagai: <span class="font-medium">${userName}</span></span>`;
                 } else {
-                    // Pengguna tidak terautentikasi (Anonim / Logged Out)
+                    // PENGGUNA TIDAK MASUK
                     document.getElementById('user-name-nav').textContent = 'Tamu';
                     document.getElementById('user-avatar-nav').src = 'https://placehold.co/100x100/A8A29E/ffffff?text=T';
                     
                     // Kontrol Form Komentar
                     submitCommentButton.disabled = true;
-                    authWarning.classList.remove('hidden');
-                    
-                    // Menonaktifkan tombol interaksi jika tidak login
-                    likeButton.onclick = () => { console.warn("Harus login!"); };
-                    submitCommentButton.onclick = (e) => { e.preventDefault(); console.warn("Harus login!"); };
+                    authStatusMessage.innerHTML = '<span class="text-red-500">Anda harus Login untuk mengirim komentar.</span>';
                 }
                 
-                // Selalu inisialisasi fungsionalitas setelah status auth diketahui
+                // Inisialisasi fungsionalitas diskusi hanya setelah status auth diketahui
                 initializeDiscussion();
             });
         }
 
         if (auth) {
             setupAuthAndInitialize();
-        } else {
-            // Inisialisasi dasar jika Firebase tidak ter-setup
-            feather.replace();
-            console.error("Fungsionalitas dinamis tidak aktif karena Firebase gagal terinisialisasi.");
-            document.getElementById('loading-comments').textContent = 'Error: Firebase gagal diinisialisasi.';
         }
     </script>
 </body>
