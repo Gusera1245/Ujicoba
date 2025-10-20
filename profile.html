@@ -3,308 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - TalkSphere</title>
+    <title>Profil Saya - TalkSphere</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
-    
-    <!-- FIREBASE LIBRARIES -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .profile-banner {
-            height: 200px;
-            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+        .profile-card {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         }
-        .avatar-edit {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            transform: translate(0, 50%);
+        .info-item {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .uid-display {
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.8rem;
         }
     </style>
 </head>
-<body class="bg-gray-100">
-    <!-- Navigation -->
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation (Sama seperti discussion.html) -->
     <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <i data-feather="message-square" class="h-6 w-6 text-indigo-600 mr-2"></i>
-                    <span class="text-xl font-bold text-indigo-600">TalkSphere</span>
+                    <a href="index(5).html" class="flex items-center">
+                        <i data-feather="message-square" class="h-6 w-6 text-indigo-600 mr-2"></i>
+                        <span class="text-xl font-bold text-indigo-600">TalkSphere</span>
+                    </a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="discussion.html" class="text-gray-600 hover:text-indigo-600">Diskusi</a>
-                    <a href="#" id="auth-link" class="flex items-center space-x-2">
-                        <img id="user-avatar-nav" class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/100x100/A8A29E/ffffff?text=U" alt="User Avatar">
-                        <span id="user-name-nav" class="hidden sm:inline text-sm font-medium text-gray-700">Tamu</span>
-                    </a>
+                    <a href="discussion.html" class="text-gray-600 hover:text-indigo-600 font-medium">Diskusi</a>
+                    <a href="profile.html" class="text-indigo-600 font-medium">Profil</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Content: Profile Card -->
+    <div class="max-w-xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="profile-card bg-white rounded-xl overflow-hidden mt-10">
+            <div class="bg-indigo-600 h-24 relative">
+                <img id="profile-avatar" class="w-24 h-24 rounded-full border-4 border-white absolute -bottom-12 left-1/2 transform -translate-x-1/2 object-cover" 
+                     src="https://placehold.co/150x150/A8A29E/ffffff?text=U" alt="Profile Avatar"
+                     onerror="this.onerror=null; this.src='https://placehold.co/150x150/4F46E5/ffffff?text=U'">
+            </div>
             
-            <!-- Kolom Kiri: Informasi Profil -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <!-- Banner Profil -->
-                    <div class="profile-banner relative">
-                        <!-- Placeholder banner. Bisa diganti foto pengguna -->
+            <div class="pt-16 p-6 text-center">
+                <h1 id="user-display-name" class="text-2xl font-bold text-gray-800">Memuat Nama...</h1>
+                <p id="auth-status" class="text-sm text-gray-500 mt-1 mb-6">Status: <span id="auth-status-text" class="font-medium text-red-500">Memeriksa...</span></p>
+
+                <!-- Pesan Status & Error -->
+                <div id="update-status-message" class="p-3 mb-4 rounded-lg text-sm text-center hidden"></div>
+
+                <div class="text-left mt-8 border border-gray-200 rounded-lg divide-y divide-gray-200">
+                    <div class="info-item p-4">
+                        <p class="text-sm font-semibold text-gray-600">User ID (UID):</p>
+                        <p id="user-uid" class="uid-display text-gray-800 mt-1">N/A</p>
                     </div>
-
-                    <!-- Detail Profil -->
-                    <div class="p-6 pt-0 relative">
-                        <div class="flex justify-center -mt-16">
-                            <div class="relative">
-                                <img id="profile-avatar" src="https://placehold.co/150x150/A8A29E/ffffff?text=U" alt="Profile Avatar" class="w-32 h-32 rounded-full border-4 border-white object-cover">
-                                <button class="avatar-edit p-2 bg-white text-indigo-600 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition duration-300">
-                                    <i data-feather="camera" class="h-5 w-5"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-4">
-                            <h1 id="profile-name" class="text-3xl font-bold text-gray-800">Memuat Nama...</h1>
-                            <p id="profile-status" class="text-sm text-gray-500 mt-1">Pengguna Terdaftar</p>
-                            <p id="profile-uid" class="text-xs text-indigo-500 mt-2 p-2 bg-indigo-50 rounded-lg break-all">UID: Memuat...</p>
-                        </div>
-
-                        <div class="flex justify-center space-x-6 mt-6 border-t pt-4">
-                            <div>
-                                <p class="text-lg font-bold text-gray-800">42</p>
-                                <p class="text-sm text-gray-500">Diskusi</p>
-                            </div>
-                            <div>
-                                <p class="text-lg font-bold text-gray-800">1.2K</p>
-                                <p class="text-sm text-gray-500">Komentar</p>
-                            </div>
-                            <div>
-                                <p class="text-lg font-bold text-gray-800">3</p>
-                                <p class="text-sm text-gray-500">Badge</p>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-8 border-t pt-4">
-                            <h3 class="font-semibold text-gray-800 mb-2">Tentang Saya</h3>
-                            <p id="profile-bio" class="text-gray-600 text-sm italic">
-                                Seseorang yang tertarik pada AI, etika, dan desain. Mencari diskusi yang mencerahkan!
-                            </p>
-                        </div>
-                        
-                        <div class="mt-8">
-                            <button id="logout-button" class="w-full bg-red-500 text-white py-2 rounded-lg font-medium hover:bg-red-600 transition duration-300 flex items-center justify-center">
-                                <i data-feather="log-out" class="h-5 w-5 mr-2"></i> Keluar
-                            </button>
-                        </div>
-
+                    <div class="info-item p-4">
+                        <p class="text-sm font-semibold text-gray-600">Tipe Akun:</p>
+                        <p id="user-account-type" class="text-gray-800 mt-1">N/A</p>
+                    </div>
+                    <div class="info-item p-4">
+                        <p class="text-sm font-semibold text-gray-600">Email (Jika ada):</p>
+                        <p id="user-email" class="text-gray-800 mt-1">N/A</p>
                     </div>
                 </div>
-            </div>
+                
+                <!-- Tombol Edit Profil -->
+                <button id="toggle-edit-form" class="mt-6 w-full bg-indigo-500 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-600 transition disabled:opacity-50" disabled>
+                    <i data-feather="edit-3" class="h-5 w-5 mr-2 inline-block"></i> Edit Profil
+                </button>
 
-            <!-- Kolom Kanan: Aktivitas Terbaru -->
-            <div class="lg:col-span-2">
-                <div class="bg-white p-6 rounded-xl shadow-lg">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Aktivitas Terbaru</h2>
-                    
-                    <div id="activity-list" class="space-y-6">
-                        <!-- Activity Item 1 -->
-                        <div class="pb-6 border-b border-gray-200">
-                            <div class="flex items-start mb-3">
-                                <img id="activity-avatar-1" src="https://placehold.co/100x100/3B82F6/ffffff?text=A" alt="Activity Avatar" class="w-10 h-10 rounded-full mr-3 object-cover">
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">Anda membuat diskusi baru</h3>
-                                    <p class="text-sm text-gray-500">1 jam yang lalu</p>
-                                </div>
-                            </div>
-                            <div class="ml-13 p-4 bg-indigo-50 rounded-lg">
-                                <a href="discussion.html" class="font-medium text-indigo-600 mb-2 hover:underline">Mengeksplorasi Masa Depan Kecerdasan Buatan dan Etikanya</a>
-                                <p class="text-gray-700 text-sm mt-1">Sebuah diskusi mendalam mengenai potensi tak terbatas AI...</p>
-                            </div>
-                            <div class="flex mt-3 ml-13 space-x-4 text-sm text-gray-500">
-                                <button class="flex items-center mr-4 hover:text-indigo-600">
-                                    <i data-feather="message-circle" class="h-4 w-4 mr-1"></i> 10 komentar
-                                </button>
-                                <button class="flex items-center mr-4 hover:text-indigo-600">
-                                    <i data-feather="heart" class="h-4 w-4 mr-1"></i> 8 likes
-                                </button>
-                                <button class="flex items-center hover:text-indigo-600">
-                                    <i data-feather="share-2" class="h-4 w-4 mr-1"></i> Bagikan
-                                </button>
-                            </div>
-                        </div>
+                <!-- Formulir Edit Profil (Awalnya Tersembunyi) -->
+                <form id="edit-profile-form" class="mt-6 space-y-4 bg-gray-100 p-5 rounded-lg border border-gray-200 hidden">
+                    <h3 class="text-lg font-bold text-gray-800 border-b pb-2 mb-3">Ubah Detail Profil</h3>
 
-                        <!-- Activity Item 2 -->
-                        <div class="pb-6 border-b border-gray-200">
-                            <div class="flex items-start mb-3">
-                                <img id="activity-avatar-2" src="https://placehold.co/100x100/F97316/ffffff?text=C" alt="Activity Avatar" class="w-10 h-10 rounded-full mr-3 object-cover">
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">Anda berkomentar pada diskusi</h3>
-                                    <p class="text-sm text-gray-500">12 jam yang lalu</p>
-                                </div>
-                            </div>
-                            <div class="ml-13">
-                                <h4 class="font-medium text-gray-800 mb-2">Pentingnya Pendidikan Digital di Sekolah</h4>
-                                <p class="text-gray-600 text-sm p-3 border-l-4 border-yellow-500 bg-yellow-50 italic">
-                                    "Saya setuju! Pendidikan harus fokus pada literasi data, bukan hanya alatnya. Itu inti dari etika AI."
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <!-- Activity Item 3 -->
-                        <div class="pb-6">
-                            <div class="flex items-start mb-3">
-                                <img id="activity-avatar-3" src="https://placehold.co/100x100/10B981/ffffff?text=L" alt="Activity Avatar" class="w-10 h-10 rounded-full mr-3 object-cover">
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">Anda menyukai diskusi</h3>
-                                    <p class="text-sm text-gray-500">2 hari yang lalu</p>
-                                </div>
-                            </div>
-                            <div class="ml-13">
-                                <h4 class="font-medium text-gray-800 mb-2">Tren Teknologi Terbaru untuk 2024</h4>
-                                <p class="text-gray-600 text-sm">Prediksi tren di AI, blockchain, dan komputasi kuantum.</p>
-                            </div>
-                        </div>
+                    <div>
+                        <label for="edit-display-name" class="block text-sm font-medium text-gray-700 text-left">Nama Tampilan</label>
+                        <input type="text" id="edit-display-name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Masukkan Nama Anda">
                     </div>
+
+                    <div>
+                        <label for="edit-photo-url" class="block text-sm font-medium text-gray-700 text-left">URL Foto Profil (Opsional)</label>
+                        <input type="url" id="edit-photo-url" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://contoh.com/avatar.jpg">
+                    </div>
+
+                    <button type="submit" id="save-profile-button" class="w-full bg-green-600 text-white py-2.5 rounded-lg font-semibold hover:bg-green-700 transition duration-300 disabled:opacity-50">
+                        Simpan Perubahan
+                    </button>
+                    <button type="button" id="cancel-edit-button" class="w-full bg-gray-300 text-gray-700 py-2.5 rounded-lg font-semibold hover:bg-gray-400 transition duration-300">
+                        Batal
+                    </button>
+                </form>
+
+                <div class="mt-8 space-y-3">
+                    <a id="login-link" href="login.html" class="block w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition hidden">
+                        Masuk / Daftar Akun
+                    </a>
+                    <button id="logout-button" class="w-full bg-gray-200 text-gray-700 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition" disabled>
+                        Logout
+                    </button>
+                    <p id="logout-message" class="text-xs text-red-500 mt-2 hidden">Logout berhasil. Silakan refresh halaman untuk login otomatis lagi.</p>
                 </div>
             </div>
         </div>
+
+        <div id="not-logged-in-message" class="text-center p-8 bg-white rounded-xl mt-8 shadow-sm hidden">
+            <i data-feather="alert-triangle" class="h-8 w-8 text-yellow-500 mx-auto mb-3"></i>
+            <p class="text-gray-700 font-medium">Anda belum login.</p>
+            <p class="text-sm text-gray-500 mt-1">Gunakan tombol di atas untuk Masuk atau Daftar.</p>
+        </div>
     </div>
 
-    <script>
+    <!-- Footer (Sama seperti discussion.html) -->
+    <footer class="bg-white border-t border-gray-200 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-gray-500">
+            &copy; 2023 TalkSphere. All rights reserved.
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        
         feather.replace();
 
         // ------------------------------------------------------------------
         // FIREBASE CONFIGURATION (Mengambil dari variabel global Canvas)
         // ------------------------------------------------------------------
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         let firebaseConfig = null;
         try {
             firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         } catch (e) {
             console.error("Gagal memparsing konfigurasi Firebase:", e);
         }
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        let app;
         let auth;
+        let currentUser = null; // Menyimpan objek user saat ini
 
         if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
-            // Inisialisasi Firebase
-            app = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
         } else {
             console.error("Firebase tidak diinisialisasi: Konfigurasi tidak ditemukan atau tidak valid.");
-            // Objek dummy untuk mencegah error
-            auth = { onAuthStateChanged: (cb) => cb(null), currentUser: null, signOut: () => console.log("Dummy Sign Out") };
+            auth = { onAuthStateChanged: (cb) => cb(null), currentUser: null }; 
+        }
+
+        // --- ELEMEN UI ---
+        const logoutButton = document.getElementById('logout-button');
+        const loginLink = document.getElementById('login-link');
+        const logoutMessage = document.getElementById('logout-message');
+        const toggleEditButton = document.getElementById('toggle-edit-form');
+        const editForm = document.getElementById('edit-profile-form');
+        const displayNameInput = document.getElementById('edit-display-name');
+        const photoUrlInput = document.getElementById('edit-photo-url');
+        const saveButton = document.getElementById('save-profile-button');
+        const cancelButton = document.getElementById('cancel-edit-button');
+        const statusMessageEl = document.getElementById('update-status-message');
+
+
+        // --- UTILITY ---
+        function showStatus(message, isError = false) {
+            statusMessageEl.textContent = message;
+            statusMessageEl.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+            if (isError) {
+                statusMessageEl.classList.add('bg-red-100', 'text-red-700');
+            } else {
+                statusMessageEl.classList.add('bg-green-100', 'text-green-700');
+            }
         }
         
-        // --- UI ELEMENT HANDLERS ---
-        const profileName = document.getElementById('profile-name');
-        const profileStatus = document.getElementById('profile-status');
-        const profileUID = document.getElementById('profile-uid');
-        const profileAvatar = document.getElementById('profile-avatar');
-        const userNameNav = document.getElementById('user-name-nav');
-        const userAvatarNav = document.getElementById('user-avatar-nav');
-        const logoutButton = document.getElementById('logout-button');
-        const authLink = document.getElementById('auth-link');
-        
-        // --- FUNGSI UTAMA UNTUK UPDATE UI ---
+        function hideStatus() {
+             statusMessageEl.classList.add('hidden');
+        }
+
+        // --- FUNGSI LOGOUT ---
+        async function handleLogout() {
+            hideStatus();
+            logoutButton.disabled = true;
+            logoutButton.textContent = "Sedang Logout...";
+            try {
+                await signOut(auth);
+                logoutMessage.classList.remove('hidden');
+                logoutButton.classList.add('hidden');
+                loginLink.classList.remove('hidden');
+                editForm.classList.add('hidden');
+                toggleEditButton.disabled = true;
+                updateProfileUI(null);
+                
+            } catch (error) {
+                console.error("Error saat logout:", error);
+                logoutButton.disabled = false;
+                logoutButton.textContent = "Gagal Logout";
+                showStatus("Gagal Logout: " + error.message, true);
+            }
+        }
+
+        // --- FUNGSI UPDATE UI BERDASARKAN STATUS USER ---
         function updateProfileUI(user) {
+            const displayNameEl = document.getElementById('user-display-name');
+            const uidEl = document.getElementById('user-uid');
+            const typeEl = document.getElementById('user-account-type');
+            const emailEl = document.getElementById('user-email');
+            const statusTextEl = document.getElementById('auth-status-text');
+            const avatarEl = document.getElementById('profile-avatar');
+            
+            currentUser = user; // Update state global user
+
             if (user) {
-                // Pengguna terautentikasi atau anonim
-                const userName = user.displayName || `User-${user.uid.substring(0, 5)}`;
+                // PENGGUNA MASUK
+                const userName = user.displayName || (user.isAnonymous ? `Tamu Unik (${user.uid.substring(0, 5)})` : `User-${user.uid.substring(0, 5)}`);
                 const userInitial = userName[0].toUpperCase();
-                // Avatar default yang keren
                 const userAvatar = user.photoURL || `https://placehold.co/150x150/4F46E5/ffffff?text=${userInitial}`;
 
-                // Update Bagian Utama Profil
-                profileName.textContent = userName;
-                profileStatus.textContent = user.isAnonymous ? 'Pengguna Anonim' : 'Pengguna Terautentikasi';
-                profileUID.textContent = `UID: ${user.uid}`;
-                profileAvatar.src = userAvatar;
-                profileAvatar.alt = userName;
+                displayNameEl.textContent = userName;
+                uidEl.textContent = user.uid;
+                typeEl.textContent = user.email ? 'Permanen (Email/Password)' : 'Kustom (Token/Anonim)';
+                emailEl.textContent = user.email || 'N/A';
+                statusTextEl.textContent = 'Terautentikasi';
+                statusTextEl.classList.remove('text-red-500');
+                statusTextEl.classList.add('text-green-600');
+                avatarEl.src = userAvatar;
+                
+                // Isi formulir edit dengan data saat ini
+                displayNameInput.value = user.displayName || '';
+                photoUrlInput.value = user.photoURL || '';
 
-                // Update Navigasi
-                userNameNav.textContent = userName;
-                userAvatarNav.src = userAvatar;
-                userAvatarNav.alt = userName;
-                
+                logoutButton.disabled = false;
+                toggleEditButton.disabled = false;
                 logoutButton.classList.remove('hidden');
-                logoutButton.onclick = handleLogout;
-                authLink.href = '#'; // Tetap di halaman profil
-            } else {
-                // Pengguna tidak login
-                profileName.textContent = 'Silakan Masuk';
-                profileStatus.textContent = 'Untuk melihat profil Anda';
-                profileUID.textContent = 'UID: Tidak Tersedia';
-                profileAvatar.src = 'https://placehold.co/150x150/A8A29E/ffffff?text=T';
-                userNameNav.textContent = 'Tamu';
-                userAvatarNav.src = 'https://placehold.co/100x100/A8A29E/ffffff?text=T';
+                loginLink.classList.add('hidden');
+                document.getElementById('not-logged-in-message').classList.add('hidden');
                 
-                // Sembunyikan tombol logout
+            } else {
+                // PENGGUNA TIDAK MASUK
+                displayNameEl.textContent = 'Tamu';
+                uidEl.textContent = 'N/A';
+                typeEl.textContent = 'Tidak Masuk';
+                emailEl.textContent = 'N/A';
+                statusTextEl.textContent = 'Tidak Terautentikasi';
+                statusTextEl.classList.remove('text-green-600');
+                statusTextEl.classList.add('text-red-500');
+                avatarEl.src = 'https://placehold.co/150x150/A8A29E/ffffff?text=T';
+
+                logoutButton.disabled = true;
+                toggleEditButton.disabled = true;
                 logoutButton.classList.add('hidden');
-                authLink.href = 'login.html';
+                loginLink.classList.remove('hidden');
+                document.getElementById('not-logged-in-message').classList.remove('hidden');
             }
         }
         
-        // --- FUNGSI LOGOUT ---
-        function handleLogout() {
-             // Menggunakan custom modal sederhana (menggantikan confirm)
-            if (!confirm("Apakah Anda yakin ingin keluar dari sesi ini?")) return;
+        // --- FUNGSI EDIT PROFIL ---
+        async function handleEditProfile(e) {
+            e.preventDefault();
+            hideStatus();
+            
+            if (!currentUser) {
+                showStatus("Anda harus login untuk mengedit profil.", true);
+                return;
+            }
 
-            if (auth && auth.currentUser) {
-                auth.signOut().then(() => {
-                    console.log("Pengguna berhasil logout.");
-                    // Opsional: Arahkan ke halaman utama/login setelah logout
-                    // window.location.href = 'index.html'; 
-                }).catch((error) => {
-                    console.error("Gagal logout:", error);
-                });
+            const newDisplayName = displayNameInput.value.trim();
+            const newPhotoURL = photoUrlInput.value.trim();
+
+            if (!newDisplayName && !newPhotoURL) {
+                 showStatus("Setidaknya satu bidang (Nama atau URL Foto) harus diisi.", true);
+                 return;
+            }
+            
+            saveButton.disabled = true;
+            saveButton.textContent = "Menyimpan...";
+            
+            try {
+                // Hati-hati: Firebase mungkin menolak URL foto yang tidak valid
+                const updates = {};
+                if (newDisplayName) updates.displayName = newDisplayName;
+                if (newPhotoURL) updates.photoURL = newPhotoURL;
+                if (!newPhotoURL) updates.photoURL = null; // Izinkan penghapusan URL foto
+
+                await updateProfile(currentUser, updates);
+                
+                showStatus("Profil berhasil diperbarui!", false);
+                
+                // Otomatis tutup form dan update UI
+                editForm.classList.add('hidden');
+                updateProfileUI(auth.currentUser); // Memaksa update UI dengan data terbaru
+                
+            } catch (error) {
+                console.error("Gagal mengupdate profil:", error);
+                showStatus("Gagal mengupdate profil: " + error.message, true);
+            } finally {
+                saveButton.disabled = false;
+                saveButton.textContent = "Simpan Perubahan";
             }
         }
 
-        // --- TITIK MASUK UTAMA: Cek Status Otentikasi ---
+        // --- LISTENER UI ---
+        toggleEditButton.addEventListener('click', () => {
+            editForm.classList.toggle('hidden');
+            hideStatus();
+            // Isi form dengan data yang ada saat ini
+            if (currentUser) {
+                displayNameInput.value = currentUser.displayName || '';
+                photoUrlInput.value = currentUser.photoURL || '';
+            }
+        });
+        
+        cancelButton.addEventListener('click', () => {
+             editForm.classList.add('hidden');
+             hideStatus();
+        });
+        
+        editForm.addEventListener('submit', handleEditProfile);
+
+
+        // --- TITIK MASUK UTAMA ---
         async function setupAuthAndInitialize() {
             if (!auth) {
                  updateProfileUI(null);
                  return;
             }
-             
-            if (initialAuthToken) {
+            
+            // 1. Coba Sign-in dengan token kustom jika ada
+            if (initialAuthToken && !auth.currentUser) {
                 try {
-                    // Coba sign in dengan custom token
-                    await auth.signInWithCustomToken(initialAuthToken);
+                    await signInWithCustomToken(auth, initialAuthToken);
                 } catch (error) {
-                    console.error("Gagal sign in dengan custom token:", error);
-                    try {
-                        // Fallback: sign in anonim
-                        await auth.signInAnonymously();
-                    } catch (anonError) {
-                         console.error("Gagal sign in secara anonim:", anonError);
-                    }
-                }
-            } else {
-                 // Jika tidak ada token (misalnya, saat testing lokal), sign in anonim
-                try {
-                    await auth.signInAnonymously();
-                } catch (anonError) {
-                    console.error("Gagal sign in secara anonim:", anonError);
+                    console.warn(`Custom token sign-in failed. Error: ${error.message}`);
                 }
             }
-
-            // Listener yang dipanggil setiap kali status auth berubah
-            auth.onAuthStateChanged(function(user) {
+            
+            // 2. Listener untuk memantau status autentikasi dan mengupdate UI
+            onAuthStateChanged(auth, function(user) {
                 updateProfileUI(user);
+                
+                if (user) {
+                    // Hanya tambahkan event listener sekali setelah login
+                    logoutButton.removeEventListener('click', handleLogout); 
+                    logoutButton.addEventListener('click', handleLogout);
+                }
             });
         }
 
-        setupAuthAndInitialize();
+        if (auth) {
+            setupAuthAndInitialize();
+        }
     </script>
 </body>
 </html>
