@@ -1,83 +1,155 @@
-// login.html - FUNGSI AUTENTIKASI DENGAN PENANGANAN ERROR KUAT
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Ambil Konfigurasi dari Lingkungan (atau fallback ke {} jika kosong)
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    let firebaseConfig = null;
-    try {
-        firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-    } catch (e) {
-        console.error("Gagal memparsing konfigurasi Firebase.");
-    }
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-    let auth = null;
-    let db = null;
-
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const actionButton = document.getElementById('auth-action-button');
-    const toggleLink = document.getElementById('toggle-auth-mode');
-    const formTitle = document.getElementById('form-title');
-    const authMessage = document.getElementById('auth-message');
-
-    let isRegisterMode = false;
-
-    // --- INISIALISASI FIREBASE ---
-    try {
-        const { initializeApp } = firebase;
-        const { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCustomToken, onAuthStateChanged } = firebase.auth;
-        const { getFirestore } = firebase.firestore;
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk / Daftar Akun</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .card { max-width: 420px; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="card w-full bg-white p-6 md:p-8 rounded-xl shadow-2xl">
+        <h2 id="form-title" class="text-3xl font-bold text-gray-800 mb-6 text-center">Masuk ke Aplikasi</h2>
         
-        // PENTING: Inisialisasi hanya jika konfigurasi ada
-        if (Object.keys(firebaseConfig).length > 0) {
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            
-            // Mencoba Sign In Otomatis menggunakan token
-            if (initialAuthToken) {
-                signInWithCustomToken(auth, initialAuthToken).catch(e => {
-                    console.warn("Gagal sign in dengan token kustom. Tetap izinkan login manual.");
-                });
-            }
-        } else {
-            displayMessage('error', 'Kesalahan Konfigurasi: Variabel Firebase Config kosong. Silakan periksa lingkungan host.');
-            actionButton.disabled = true;
-        }
-    } catch (e) {
-        displayMessage('error', `Kesalahan Fatal Firebase: ${e.message}. Pastikan library Firebase dimuat.`);
+        <!-- Pesan Status & Error -->
+        <div id="auth-message" role="alert"></div>
+
+        <!-- Form Otentikasi -->
+        <div class="space-y-4">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="nama@email.com">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" id="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="••••••••">
+            </div>
+            <button id="auth-action-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out" disabled>
+                Proses...
+            </button>
+        </div>
+
+        <p id="toggle-auth-mode" class="mt-6 text-center text-sm text-gray-600 cursor-pointer hover:text-indigo-600 transition duration-150 ease-in-out">
+            Belum punya akun? <span class="font-semibold">Daftar sekarang</span>
+        </p>
+    </div>
+    <!-- Library Firebase Modular (Wajib untuk Auth) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+// --- DEKLARASI GLOBAL DARI LINGKUNGAN ---
+// Catatan: Variabel ini disediakan oleh lingkungan host, jika kosong, auth akan gagal.
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+let firebaseConfig = null;
+try {
+    firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+} catch (e) {
+    console.error("Gagal memparsing konfigurasi Firebase.");
+}
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+let auth = null;
+let db = null;
+let isAuthInitialized = false;
+
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+const actionButton = document.getElementById('auth-action-button');
+const toggleLink = document.getElementById('toggle-auth-mode');
+const formTitle = document.getElementById('form-title');
+const authMessage = document.getElementById('auth-message');
+
+let isRegisterMode = false;
+
+// --- FUNGSI UTILITY ---
+function displayMessage(type, message) {
+    if (type === 'info') {
+        authMessage.className = 'p-3 mt-4 text-sm rounded-lg bg-blue-100 text-blue-700';
+    } else if (type === 'success') {
+        authMessage.className = 'p-3 mt-4 text-sm rounded-lg bg-green-100 text-green-700';
+    } else { // error
+        authMessage.className = 'p-3 mt-4 text-sm rounded-lg bg-red-100 text-red-700';
+    }
+    authMessage.textContent = message;
+}
+
+function toggleMode() {
+    isRegisterMode = !isRegisterMode;
+    if (isRegisterMode) {
+        formTitle.textContent = 'Daftar Akun Baru';
+        actionButton.textContent = 'Daftar';
+        toggleLink.innerHTML = 'Sudah punya akun? <span class="font-semibold">Masuk</span>';
+    } else {
+        formTitle.textContent = 'Masuk ke Aplikasi';
+        actionButton.textContent = 'Masuk';
+        toggleLink.innerHTML = 'Belum punya akun? <span class="font-semibold">Daftar sekarang</span>';
+    }
+    authMessage.textContent = '';
+    // Aktifkan tombol jika Auth sudah siap
+    if (isAuthInitialized) {
+        actionButton.disabled = false;
+        actionButton.textContent = isRegisterMode ? 'Daftar' : 'Masuk';
+    } else {
         actionButton.disabled = true;
     }
+}
 
-
-    // --- FUNGSI UTILITY ---
-    function displayMessage(type, message) {
-        authMessage.className = `p-3 mt-4 text-sm rounded-lg ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
-        authMessage.textContent = message;
+// --- INISIALISASI FIREBASE ---
+function initializeFirebase() {
+    // Cek Konfigurasi (jika kosong, jangan inisialisasi)
+    if (Object.keys(firebaseConfig).length === 0) {
+        displayMessage('error', 'KESALAHAN: Konfigurasi Firebase tidak ditemukan (variabel host kosong). Fitur Login dinonaktifkan.');
+        return;
     }
 
-    function toggleMode() {
-        isRegisterMode = !isRegisterMode;
-        if (isRegisterMode) {
-            formTitle.textContent = 'Daftar Akun Baru';
-            actionButton.textContent = 'Daftar';
-            toggleLink.innerHTML = 'Sudah punya akun? <span class="font-semibold">Masuk</span>';
-        } else {
-            formTitle.textContent = 'Masuk ke Aplikasi';
-            actionButton.textContent = 'Masuk';
-            toggleLink.innerHTML = 'Belum punya akun? <span class="font-semibold">Daftar sekarang</span>';
+    try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        isAuthInitialized = true;
+        
+        // Atur status tombol dan pesan
+        actionButton.disabled = false;
+        actionButton.textContent = isRegisterMode ? 'Daftar' : 'Masuk';
+
+        // Mencoba Sign In Otomatis menggunakan token (jika ada)
+        if (initialAuthToken) {
+            signInWithCustomToken(auth, initialAuthToken).catch(e => {
+                console.warn("Gagal sign in dengan token kustom. Mengizinkan login manual.", e);
+            });
         }
-        authMessage.textContent = ''; // Hapus pesan saat ganti mode
-    }
+        
+        // Listener Status Auth
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User sudah login, arahkan ke halaman utama
+                displayMessage('success', 'Berhasil Login. Mengarahkan ke halaman utama...');
+                setTimeout(() => { window.location.href = 'index(5).html'; }, 1000);
+            }
+        });
 
-    // --- PENANGANAN OTENTIKASI ---
+    } catch (e) {
+        displayMessage('error', `KESALAHAN FATAL: Gagal inisialisasi Firebase. ${e.message}`);
+        actionButton.disabled = true;
+    }
+}
+
+// --- PENANGANAN OTENTIKASI ---
+document.addEventListener('DOMContentLoaded', () => {
+    initializeFirebase();
+    toggleMode(); // Inisialisasi mode awal
+
     actionButton.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
 
         if (!auth) {
-            displayMessage('error', 'Auth Error: Layanan Otentikasi belum tersedia.');
+            displayMessage('error', 'Auth Error: Layanan Otentikasi belum siap.');
             return;
         }
 
@@ -92,13 +164,11 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (isRegisterMode) {
                 await createUserWithEmailAndPassword(auth, email, password);
-                displayMessage('success', 'Pendaftaran Berhasil! Anda sudah masuk. Mengarahkan ke halaman utama...');
+                // Redirect dilakukan oleh onAuthStateChanged listener
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
-                displayMessage('success', 'Login Berhasil! Mengarahkan ke halaman utama...');
+                // Redirect dilakukan oleh onAuthStateChanged listener
             }
-            // Arahkan ke halaman utama (index) setelah 2 detik
-            setTimeout(() => { window.location.href = 'index(5).html'; }, 2000);
 
         } catch (error) {
             // Tangani error spesifik dari Firebase
@@ -106,10 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
             displayMessage('error', errorMessage);
             console.error('Login/Register Error:', error);
         } finally {
-            actionButton.disabled = false;
+            // Tombol akan tetap nonaktif sementara menunggu redirect atau user mengklik lagi
         }
     });
 
     toggleLink.addEventListener('click', toggleMode);
-    toggleMode(); // Inisialisasi mode awal
 });
+    </script>
+</body>
+</html>
