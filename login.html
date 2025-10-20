@@ -7,11 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
-
-    <!-- FIREBASE LIBRARIES -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
+    
     <style>
         body { font-family: 'Inter', sans-serif; }
         .auth-container {
@@ -66,7 +62,10 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        
         feather.replace();
 
         // ------------------------------------------------------------------
@@ -75,6 +74,7 @@
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         let firebaseConfig = null;
         try {
+            // Menggunakan variabel global yang disediakan Canvas
             firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         } catch (e) {
             console.error("Gagal memparsing konfigurasi Firebase:", e);
@@ -82,8 +82,8 @@
 
         let auth;
         if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
-            const app = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
         } else {
             console.error("Firebase tidak diinisialisasi: Konfigurasi tidak ditemukan atau tidak valid.");
         }
@@ -97,7 +97,7 @@
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
 
-        let isLoginMode = true; // true: Login, false: Register
+        let isLoginMode = true; // true: Masuk (Login), false: Daftar (Register)
 
         // --- UTILITY ---
         function showStatus(message, isError = false) {
@@ -122,7 +122,7 @@
                 authButton.textContent = "Daftar";
                 toggleAuthButton.textContent = "Sudah punya akun? Masuk di sini";
             }
-            statusMessage.classList.add('hidden'); // Sembunyikan pesan saat mode berubah
+            statusMessage.classList.add('hidden'); 
         });
 
         // --- HANDLER SUBMIT FORM ---
@@ -142,12 +142,10 @@
 
             try {
                 if (isLoginMode) {
-                    // Logika Masuk (Sign In)
-                    await auth.signInWithEmailAndPassword(email, password);
+                    await signInWithEmailAndPassword(auth, email, password);
                     showStatus("Masuk Berhasil! Mengarahkan...", false);
                 } else {
-                    // Logika Daftar (Register)
-                    await auth.createUserWithEmailAndPassword(email, password);
+                    await createUserWithEmailAndPassword(auth, email, password);
                     showStatus("Daftar Berhasil! Anda sudah masuk. Mengarahkan...", false);
                 }
 
@@ -166,8 +164,8 @@
                     errorMessage = "Format email tidak valid.";
                 } else if (error.code === 'auth/weak-password') {
                     errorMessage = "Password terlalu lemah (minimal 6 karakter).";
-                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    errorMessage = "Email atau password salah.";
+                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    errorMessage = "Email atau password salah. Cek kembali.";
                 } else {
                     errorMessage = error.message;
                 }
@@ -179,28 +177,26 @@
         });
         
         // --- CEK STATUS OTENTIKASI AWAL ---
-        // Jika pengguna sudah login (misalnya dari token kustom), langsung arahkan ke diskusi.
         if (auth) {
-             auth.onAuthStateChanged(user => {
+             onAuthStateChanged(auth, user => {
                 if (user) {
                     showStatus("Anda sudah login! Mengarahkan ke diskusi...", false);
                     setTimeout(() => {
                         window.location.href = 'discussion.html';
                     }, 1000);
+                } else if (initialAuthToken) {
+                    // Coba sign in dengan token kustom jika ada
+                    signInWithCustomToken(auth, initialAuthToken)
+                        .then(() => {
+                             // onAuthStateChanged akan dipanggil lagi dengan user yang berhasil login
+                        })
+                        .catch(error => {
+                            console.log("Custom token sign-in failed. Proceeding with manual login.");
+                             // Pastikan tidak ada sesi anonim yang menggantung 
+                            signOut(auth).catch(() => {});
+                        });
                 }
             });
-            
-            // Coba sign in dengan token kustom (jika ada) saat halaman dimuat
-             if (initialAuthToken) {
-                 auth.signInWithCustomToken(initialAuthToken)
-                    .then(() => {
-                        // Tidak perlu showStatus karena onAuthStateChanged akan menangani redirect
-                    })
-                    .catch(error => {
-                        console.log("Custom token sign-in failed. Proceeding with manual login.");
-                        // Biarkan pengguna masuk secara manual
-                    });
-            }
         }
     </script>
 </body>
