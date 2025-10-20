@@ -21,8 +21,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
-</head>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script> </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center">
     <div class="auth-container rounded-xl shadow-2xl overflow-hidden w-full max-w-md">
         <div class="p-8">
@@ -54,7 +53,7 @@
             <div class="flex items-center justify-center mb-6">
                 <div class="border-t border-gray-300 flex-grow"></div>
                 <span class="px-3 text-gray-500 text-sm">atau</span>
-<div class="border-t border-gray-300 flex-grow"></div>
+                <div class="border-t border-gray-300 flex-grow"></div>
             </div>
 
             <div class="grid grid-cols-2 gap-3 mb-6">
@@ -78,7 +77,7 @@
         feather.replace();
 
         // --------------------------------------------------------
-        // !!!! PENTING: GANTI DENGAN Konfigurasi Firebase Anda !!!!
+        // !!!! PENTING: Konfigurasi Firebase Anda yang asli !!!!
         // --------------------------------------------------------
         const firebaseConfig = {
           apiKey: "AIzaSyBrFPsscDGwhyBmu7kfcl6Ys5oJQhUuaGA", 
@@ -89,19 +88,18 @@
           appId: "1:136046595755:web:60bbef8c41b4e4dca731ee",
         };
 
-        // Inisialisasi Firebase
+        // Inisialisasi Firebase & Firestore
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.firestore(); // INISIALISASI FIRESTORE
         
         // Logika untuk menangani tombol Login
         document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // Mencegah form melakukan submit biasa
+            e.preventDefault();
 
-            // Ambil Nilai dari Input yang sudah diberi ID
             const email = document.getElementById('email-input').value;
             const password = document.getElementById('password-input').value;
 
-            // Pastikan Email dan Password terisi
             if (!email || !password) {
                 alert('Email dan Password harus diisi!');
                 return;
@@ -110,17 +108,36 @@
             // Lakukan Login dengan Firebase
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Sukses Login
-                    alert('Login Berhasil! Selamat datang!');
+                    alert('Login Berhasil! Memeriksa Peran...');
                     
-                    // Arahkan pengguna ke halaman dashboard/admin
-                    window.location.href = 'admin.html'; 
+                    const user = userCredential.user;
+                    
+                    // BACA PERAN DARI FIRESTORE (Koleksi 'users', Dokumen = UID Pengguna)
+                    db.collection('users').doc(user.uid).get()
+                        .then((doc) => {
+                            let redirectPage = 'profile.html'; // Default: Arahkan ke profile.html
+
+                            if (doc.exists) {
+                                const userData = doc.data();
+                                
+                                // Cek apakah peran user adalah 'admin'
+                                if (userData.role === 'admin') {
+                                    redirectPage = 'admin.html';
+                                }
+                            }
+                            
+                            // Lakukan pengalihan
+                            window.location.href = redirectPage;
+                        })
+                        .catch((error) => {
+                            console.error("Error mendapatkan data peran pengguna:", error);
+                            // Fallback jika terjadi error koneksi ke database, tetap diarahkan ke profil
+                            window.location.href = 'profile.html'; 
+                        });
                 })
                 .catch((error) => {
-                    // Gagal Login
+                    // Logika Gagal Login
                     const errorCode = error.code;
-
-                    // Tampilkan pesan error yang lebih mudah dipahami
                     let errorMessage = 'Terjadi kesalahan login. Silakan coba lagi.';
                     if (errorCode === 'auth/user-not-found') {
                         errorMessage = 'Email tidak terdaftar.';
