@@ -7,7 +7,14 @@
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    
+    <!-- FIREBASE LIBRARIES -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <style>
+        body { font-family: 'Inter', sans-serif; }
         .profile-banner {
             height: 200px;
             background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
@@ -29,183 +36,139 @@
                     <i data-feather="message-square" class="h-6 w-6 text-indigo-600 mr-2"></i>
                     <span class="text-xl font-bold text-indigo-600">TalkSphere</span>
                 </div>
-                <div class="flex items-center">
-                    <a href="index.html" class="text-gray-700 hover:text-indigo-600 mr-4">
-                        <i data-feather="home" class="h-5 w-5"></i>
+                <div class="flex items-center space-x-4">
+                    <a href="discussion.html" class="text-gray-600 hover:text-indigo-600">Diskusi</a>
+                    <a href="#" id="auth-link" class="flex items-center space-x-2">
+                        <img id="user-avatar-nav" class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/100x100/A8A29E/ffffff?text=U" alt="User Avatar">
+                        <span id="user-name-nav" class="hidden sm:inline text-sm font-medium text-gray-700">Tamu</span>
                     </a>
-                    <div class="relative">
-                        <img src="http://static.photos/people/200x200/5" alt="User" class="w-8 h-8 rounded-full cursor-pointer" id="user-menu">
-                        <!-- Dropdown menu would go here -->
-                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Profile Banner -->
-        <div class="profile-banner rounded-lg shadow-md relative mb-20">
-            <div class="absolute -bottom-10 left-6">
-                <div class="relative">
-                    <img src="http://static.photos/people/200x200/5" alt="Profile" class="w-20 h-20 rounded-full border-4 border-white">
-                    <button class="avatar-edit bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition duration-300">
-                        <i data-feather="edit-2" class="h-4 w-4"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="absolute bottom-4 right-6">
-                <button class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition duration-300">
-                    <i data-feather="edit-2" class="h-4 w-4 inline mr-1"></i> Edit Profile
-                </button>
-            </div>
-        </div>
-
-        <!-- Profile Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <!-- Left Column -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Kolom Kiri: Informasi Profil -->
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">Alex Johnson</h2>
-                    <p class="text-gray-600 mb-4">Digital marketer and community builder. Passionate about technology and sustainable living.</p>
-                    
-                    <div class="space-y-3 mb-6">
-                        <div class="flex items-center">
-                            <i data-feather="map-pin" class="h-4 w-4 text-gray-500 mr-2"></i>
-                            <span class="text-gray-600">San Francisco, CA</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i data-feather="briefcase" class="h-4 w-4 text-gray-500 mr-2"></i>
-                            <span class="text-gray-600">Marketing Director at TechCorp</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i data-feather="link" class="h-4 w-4 text-gray-500 mr-2"></i>
-                            <a href="#" class="text-indigo-600 hover:text-indigo-800">example.com</a>
-                        </div>
-                        <div class="flex items-center">
-                            <i data-feather="calendar" class="h-4 w-4 text-gray-500 mr-2"></i>
-                            <span class="text-gray-600">Joined June 2022</span>
-                        </div>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <!-- Banner Profil -->
+                    <div class="profile-banner relative">
+                        <!-- Placeholder banner. Bisa diganti foto pengguna -->
                     </div>
 
-                    <h3 class="font-semibold text-gray-800 mb-3">Interests</h3>
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-3 py-1 rounded-full">Technology</span>
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-3 py-1 rounded-full">Marketing</span>
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-3 py-1 rounded-full">Sustainability</span>
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-3 py-1 rounded-full">Travel</span>
-                    </div>
+                    <!-- Detail Profil -->
+                    <div class="p-6 pt-0 relative">
+                        <div class="flex justify-center -mt-16">
+                            <div class="relative">
+                                <img id="profile-avatar" src="https://placehold.co/150x150/A8A29E/ffffff?text=U" alt="Profile Avatar" class="w-32 h-32 rounded-full border-4 border-white object-cover">
+                                <button class="avatar-edit p-2 bg-white text-indigo-600 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition duration-300">
+                                    <i data-feather="camera" class="h-5 w-5"></i>
+                                </button>
+                            </div>
+                        </div>
 
-                    <h3 class="font-semibold text-gray-800 mb-3">Stats</h3>
-                    <div class="grid grid-cols-3 gap-4 text-center">
-                        <div>
-                            <div class="text-2xl font-bold text-indigo-600">42</div>
-                            <div class="text-xs text-gray-500">Discussions</div>
+                        <div class="text-center mt-4">
+                            <h1 id="profile-name" class="text-3xl font-bold text-gray-800">Memuat Nama...</h1>
+                            <p id="profile-status" class="text-sm text-gray-500 mt-1">Pengguna Terdaftar</p>
+                            <p id="profile-uid" class="text-xs text-indigo-500 mt-2 p-2 bg-indigo-50 rounded-lg break-all">UID: Memuat...</p>
                         </div>
-                        <div>
-                            <div class="text-2xl font-bold text-indigo-600">128</div>
-                            <div class="text-xs text-gray-500">Comments</div>
+
+                        <div class="flex justify-center space-x-6 mt-6 border-t pt-4">
+                            <div>
+                                <p class="text-lg font-bold text-gray-800">42</p>
+                                <p class="text-sm text-gray-500">Diskusi</p>
+                            </div>
+                            <div>
+                                <p class="text-lg font-bold text-gray-800">1.2K</p>
+                                <p class="text-sm text-gray-500">Komentar</p>
+                            </div>
+                            <div>
+                                <p class="text-lg font-bold text-gray-800">3</p>
+                                <p class="text-sm text-gray-500">Badge</p>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-2xl font-bold text-indigo-600">1.2k</div>
-                            <div class="text-xs text-gray-500">Likes</div>
+                        
+                        <div class="mt-8 border-t pt-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Tentang Saya</h3>
+                            <p id="profile-bio" class="text-gray-600 text-sm italic">
+                                Seseorang yang tertarik pada AI, etika, dan desain. Mencari diskusi yang mencerahkan!
+                            </p>
                         </div>
+                        
+                        <div class="mt-8">
+                            <button id="logout-button" class="w-full bg-red-500 text-white py-2 rounded-lg font-medium hover:bg-red-600 transition duration-300 flex items-center justify-center">
+                                <i data-feather="log-out" class="h-5 w-5 mr-2"></i> Keluar
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column -->
+            <!-- Kolom Kanan: Aktivitas Terbaru -->
             <div class="lg:col-span-2">
-                <!-- Post Update -->
-                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div class="flex items-start">
-                        <img src="http://static.photos/people/200x200/5" alt="User" class="w-10 h-10 rounded-full mr-3">
-                        <div class="flex-1">
-                            <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-transparent" placeholder="Start a discussion..."></textarea>
-                            <div class="flex justify-between items-center mt-3">
-                                <div class="flex space-x-2">
-                                    <button class="text-gray-500 hover:text-indigo-600 p-2 rounded-full hover:bg-gray-100">
-                                        <i data-feather="image"></i>
-                                    </button>
-                                    <button class="text-gray-500 hover:text-indigo-600 p-2 rounded-full hover:bg-gray-100">
-                                        <i data-feather="link"></i>
-                                    </button>
-                                    <button class="text-gray-500 hover:text-indigo-600 p-2 rounded-full hover:bg-gray-100">
-                                        <i data-feather="calendar"></i>
-                                    </button>
-                                </div>
-                                <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition duration-300">
-                                    Post
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Activity Feed -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-6">Recent Activity</h2>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Aktivitas Terbaru</h2>
                     
-                    <!-- Activity Item 1 -->
-                    <div class="border-b border-gray-200 pb-6 mb-6">
-                        <div class="flex items-start mb-3">
-                            <img src="http://static.photos/people/200x200/5" alt="User" class="w-10 h-10 rounded-full mr-3">
-                            <div>
-                                <h3 class="font-semibold text-gray-800">You started a discussion</h3>
-                                <p class="text-sm text-gray-500">2 hours ago</p>
+                    <div id="activity-list" class="space-y-6">
+                        <!-- Activity Item 1 -->
+                        <div class="pb-6 border-b border-gray-200">
+                            <div class="flex items-start mb-3">
+                                <img id="activity-avatar-1" src="https://placehold.co/100x100/3B82F6/ffffff?text=A" alt="Activity Avatar" class="w-10 h-10 rounded-full mr-3 object-cover">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Anda membuat diskusi baru</h3>
+                                    <p class="text-sm text-gray-500">1 jam yang lalu</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="ml-13">
-                            <h4 class="font-medium text-gray-800 mb-2">How do you stay productive while working remotely?</h4>
-                            <p class="text-gray-600 mb-3">I've been struggling with staying focused at home. What are your best tips and tricks for remote work productivity?</p>
-                            <div class="flex items-center text-sm text-gray-500">
+                            <div class="ml-13 p-4 bg-indigo-50 rounded-lg">
+                                <a href="discussion.html" class="font-medium text-indigo-600 mb-2 hover:underline">Mengeksplorasi Masa Depan Kecerdasan Buatan dan Etikanya</a>
+                                <p class="text-gray-700 text-sm mt-1">Sebuah diskusi mendalam mengenai potensi tak terbatas AI...</p>
+                            </div>
+                            <div class="flex mt-3 ml-13 space-x-4 text-sm text-gray-500">
                                 <button class="flex items-center mr-4 hover:text-indigo-600">
-                                    <i data-feather="message-square" class="h-4 w-4 mr-1"></i> 12 comments
+                                    <i data-feather="message-circle" class="h-4 w-4 mr-1"></i> 10 komentar
                                 </button>
-                                <button class="flex items-center mr-4 hover:text-indigo-600">
-                                    <i data-feather="heart" class="h-4 w-4 mr-1"></i> 24 likes
-                                </button>
-                                <button class="flex items-center hover:text-indigo-600">
-                                    <i data-feather="share-2" class="h-4 w-4 mr-1"></i> Share
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Activity Item 2 -->
-                    <div class="border-b border-gray-200 pb-6 mb-6">
-                        <div class="flex items-start mb-3">
-                            <img src="http://static.photos/people/200x200/8" alt="User" class="w-10 h-10 rounded-full mr-3">
-                            <div>
-                                <h3 class="font-semibold text-gray-800">You commented on</h3>
-                                <p class="text-sm text-gray-500">Yesterday</p>
-                            </div>
-                        </div>
-                        <div class="ml-13">
-                            <h4 class="font-medium text-gray-800 mb-2">Sustainable Business Practices</h4>
-                            <p class="text-gray-600 mb-3">"We've implemented a paperless policy in our office and reduced waste by 60% in just six months. It's amazing what small changes can do!"</p>
-                            <div class="flex items-center text-sm text-gray-500">
                                 <button class="flex items-center mr-4 hover:text-indigo-600">
                                     <i data-feather="heart" class="h-4 w-4 mr-1"></i> 8 likes
                                 </button>
                                 <button class="flex items-center hover:text-indigo-600">
-                                    <i data-feather="share-2" class="h-4 w-4 mr-1"></i> Share
+                                    <i data-feather="share-2" class="h-4 w-4 mr-1"></i> Bagikan
                                 </button>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Activity Item 3 -->
-                    <div class="pb-6">
-                        <div class="flex items-start mb-3">
-                            <img src="http://static.photos/people/200x200/5" alt="User" class="w-10 h-10 rounded-full mr-3">
-                            <div>
-                                <h3 class="font-semibold text-gray-800">You liked a discussion</h3>
-                                <p class="text-sm text-gray-500">2 days ago</p>
+                        <!-- Activity Item 2 -->
+                        <div class="pb-6 border-b border-gray-200">
+                            <div class="flex items-start mb-3">
+                                <img id="activity-avatar-2" src="https://placehold.co/100x100/F97316/ffffff?text=C" alt="Activity Avatar" class="w-10 h-10 rounded-full mr-3 object-cover">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Anda berkomentar pada diskusi</h3>
+                                    <p class="text-sm text-gray-500">12 jam yang lalu</p>
+                                </div>
+                            </div>
+                            <div class="ml-13">
+                                <h4 class="font-medium text-gray-800 mb-2">Pentingnya Pendidikan Digital di Sekolah</h4>
+                                <p class="text-gray-600 text-sm p-3 border-l-4 border-yellow-500 bg-yellow-50 italic">
+                                    "Saya setuju! Pendidikan harus fokus pada literasi data, bukan hanya alatnya. Itu inti dari etika AI."
+                                </p>
                             </div>
                         </div>
-                        <div class="ml-13">
-                            <h4 class="font-medium text-gray-800 mb-2">Emerging Tech Trends for 2024</h4>
-                            <p class="text-gray-600">Predicted trends in AI, blockchain, and quantum computing.</p>
+                        
+                        <!-- Activity Item 3 -->
+                        <div class="pb-6">
+                            <div class="flex items-start mb-3">
+                                <img id="activity-avatar-3" src="https://placehold.co/100x100/10B981/ffffff?text=L" alt="Activity Avatar" class="w-10 h-10 rounded-full mr-3 object-cover">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Anda menyukai diskusi</h3>
+                                    <p class="text-sm text-gray-500">2 hari yang lalu</p>
+                                </div>
+                            </div>
+                            <div class="ml-13">
+                                <h4 class="font-medium text-gray-800 mb-2">Tren Teknologi Terbaru untuk 2024</h4>
+                                <p class="text-gray-600 text-sm">Prediksi tren di AI, blockchain, dan komputasi kuantum.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -215,6 +178,134 @@
 
     <script>
         feather.replace();
+
+        // ------------------------------------------------------------------
+        // FIREBASE CONFIGURATION (Mengambil dari variabel global Canvas)
+        // ------------------------------------------------------------------
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        let firebaseConfig = null;
+        try {
+            firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        } catch (e) {
+            console.error("Gagal memparsing konfigurasi Firebase:", e);
+        }
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app;
+        let auth;
+
+        if (firebaseConfig && Object.keys(firebaseConfig).length > 0) {
+            // Inisialisasi Firebase
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+        } else {
+            console.error("Firebase tidak diinisialisasi: Konfigurasi tidak ditemukan atau tidak valid.");
+            // Objek dummy untuk mencegah error
+            auth = { onAuthStateChanged: (cb) => cb(null), currentUser: null, signOut: () => console.log("Dummy Sign Out") };
+        }
+        
+        // --- UI ELEMENT HANDLERS ---
+        const profileName = document.getElementById('profile-name');
+        const profileStatus = document.getElementById('profile-status');
+        const profileUID = document.getElementById('profile-uid');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const userNameNav = document.getElementById('user-name-nav');
+        const userAvatarNav = document.getElementById('user-avatar-nav');
+        const logoutButton = document.getElementById('logout-button');
+        const authLink = document.getElementById('auth-link');
+        
+        // --- FUNGSI UTAMA UNTUK UPDATE UI ---
+        function updateProfileUI(user) {
+            if (user) {
+                // Pengguna terautentikasi atau anonim
+                const userName = user.displayName || `User-${user.uid.substring(0, 5)}`;
+                const userInitial = userName[0].toUpperCase();
+                // Avatar default yang keren
+                const userAvatar = user.photoURL || `https://placehold.co/150x150/4F46E5/ffffff?text=${userInitial}`;
+
+                // Update Bagian Utama Profil
+                profileName.textContent = userName;
+                profileStatus.textContent = user.isAnonymous ? 'Pengguna Anonim' : 'Pengguna Terautentikasi';
+                profileUID.textContent = `UID: ${user.uid}`;
+                profileAvatar.src = userAvatar;
+                profileAvatar.alt = userName;
+
+                // Update Navigasi
+                userNameNav.textContent = userName;
+                userAvatarNav.src = userAvatar;
+                userAvatarNav.alt = userName;
+                
+                logoutButton.classList.remove('hidden');
+                logoutButton.onclick = handleLogout;
+                authLink.href = '#'; // Tetap di halaman profil
+            } else {
+                // Pengguna tidak login
+                profileName.textContent = 'Silakan Masuk';
+                profileStatus.textContent = 'Untuk melihat profil Anda';
+                profileUID.textContent = 'UID: Tidak Tersedia';
+                profileAvatar.src = 'https://placehold.co/150x150/A8A29E/ffffff?text=T';
+                userNameNav.textContent = 'Tamu';
+                userAvatarNav.src = 'https://placehold.co/100x100/A8A29E/ffffff?text=T';
+                
+                // Sembunyikan tombol logout
+                logoutButton.classList.add('hidden');
+                authLink.href = 'login.html';
+            }
+        }
+        
+        // --- FUNGSI LOGOUT ---
+        function handleLogout() {
+             // Menggunakan custom modal sederhana (menggantikan confirm)
+            if (!confirm("Apakah Anda yakin ingin keluar dari sesi ini?")) return;
+
+            if (auth && auth.currentUser) {
+                auth.signOut().then(() => {
+                    console.log("Pengguna berhasil logout.");
+                    // Opsional: Arahkan ke halaman utama/login setelah logout
+                    // window.location.href = 'index.html'; 
+                }).catch((error) => {
+                    console.error("Gagal logout:", error);
+                });
+            }
+        }
+
+        // --- TITIK MASUK UTAMA: Cek Status Otentikasi ---
+        async function setupAuthAndInitialize() {
+            if (!auth) {
+                 updateProfileUI(null);
+                 return;
+            }
+             
+            if (initialAuthToken) {
+                try {
+                    // Coba sign in dengan custom token
+                    await auth.signInWithCustomToken(initialAuthToken);
+                } catch (error) {
+                    console.error("Gagal sign in dengan custom token:", error);
+                    try {
+                        // Fallback: sign in anonim
+                        await auth.signInAnonymously();
+                    } catch (anonError) {
+                         console.error("Gagal sign in secara anonim:", anonError);
+                    }
+                }
+            } else {
+                 // Jika tidak ada token (misalnya, saat testing lokal), sign in anonim
+                try {
+                    await auth.signInAnonymously();
+                } catch (anonError) {
+                    console.error("Gagal sign in secara anonim:", anonError);
+                }
+            }
+
+            // Listener yang dipanggil setiap kali status auth berubah
+            auth.onAuthStateChanged(function(user) {
+                updateProfileUI(user);
+            });
+        }
+
+        setupAuthAndInitialize();
     </script>
 </body>
 </html>
+
