@@ -37,151 +37,152 @@
             Belum punya akun? <span class="font-semibold">Daftar sekarang</span>
         </p>
     </div>
+
     <!-- Library Firebase Modular (Wajib untuk Auth) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-// --- DEKLARASI GLOBAL DARI LINGKUNGAN ---
-// Catatan: Variabel ini disediakan oleh lingkungan host, jika kosong, auth akan gagal.
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-let firebaseConfig = null;
-try {
-    firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-} catch (e) {
-    console.error("Gagal memparsing konfigurasi Firebase.");
-}
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-let auth = null;
-let db = null;
-let isAuthInitialized = false;
-
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const actionButton = document.getElementById('auth-action-button');
-const toggleLink = document.getElementById('toggle-auth-mode');
-const formTitle = document.getElementById('form-title');
-const authMessage = document.getElementById('auth-message');
-
-let isRegisterMode = false;
-
-// --- FUNGSI UTILITY ---
-function displayMessage(type, message) {
-    if (type === 'info') {
-        authMessage.className = 'p-3 mt-4 text-sm rounded-lg bg-blue-100 text-blue-700';
-    } else if (type === 'success') {
-        authMessage.className = 'p-3 mt-4 text-sm rounded-lg bg-green-100 text-green-700';
-    } else { // error
-        authMessage.className = 'p-3 mt-4 text-sm rounded-lg bg-red-100 text-red-700';
-    }
-    authMessage.textContent = message;
-}
-
-function toggleMode() {
-    isRegisterMode = !isRegisterMode;
-    if (isRegisterMode) {
-        formTitle.textContent = 'Daftar Akun Baru';
-        actionButton.textContent = 'Daftar';
-        toggleLink.innerHTML = 'Sudah punya akun? <span class="font-semibold">Masuk</span>';
-    } else {
-        formTitle.textContent = 'Masuk ke Aplikasi';
-        actionButton.textContent = 'Masuk';
-        toggleLink.innerHTML = 'Belum punya akun? <span class="font-semibold">Daftar sekarang</span>';
-    }
-    authMessage.textContent = '';
-    // Aktifkan tombol jika Auth sudah siap
-    if (isAuthInitialized) {
-        actionButton.disabled = false;
-        actionButton.textContent = isRegisterMode ? 'Daftar' : 'Masuk';
-    } else {
-        actionButton.disabled = true;
-    }
-}
-
-// --- INISIALISASI FIREBASE ---
-function initializeFirebase() {
-    // Cek Konfigurasi (jika kosong, jangan inisialisasi)
-    if (Object.keys(firebaseConfig).length === 0) {
-        displayMessage('error', 'KESALAHAN: Konfigurasi Firebase tidak ditemukan (variabel host kosong). Fitur Login dinonaktifkan.');
-        return;
-    }
-
-    try {
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
-        isAuthInitialized = true;
         
-        // Atur status tombol dan pesan
-        actionButton.disabled = false;
-        actionButton.textContent = isRegisterMode ? 'Daftar' : 'Masuk';
-
-        // Mencoba Sign In Otomatis menggunakan token (jika ada)
-        if (initialAuthToken) {
-            signInWithCustomToken(auth, initialAuthToken).catch(e => {
-                console.warn("Gagal sign in dengan token kustom. Mengizinkan login manual.", e);
-            });
-        }
-        
-        // Listener Status Auth
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User sudah login, arahkan ke halaman utama
-                displayMessage('success', 'Berhasil Login. Mengarahkan ke halaman utama...');
-                setTimeout(() => { window.location.href = 'index(5).html'; }, 1000);
-            }
-        });
-
-    } catch (e) {
-        displayMessage('error', `KESALAHAN FATAL: Gagal inisialisasi Firebase. ${e.message}`);
-        actionButton.disabled = true;
-    }
-}
-
-// --- PENANGANAN OTENTIKASI ---
-document.addEventListener('DOMContentLoaded', () => {
-    initializeFirebase();
-    toggleMode(); // Inisialisasi mode awal
-
-    actionButton.addEventListener('click', async () => {
-        const email = emailInput.value.trim();
-        const password = passwordInput.value.trim();
-
-        if (!auth) {
-            displayMessage('error', 'Auth Error: Layanan Otentikasi belum siap.');
-            return;
-        }
-
-        if (!email || !password) {
-            displayMessage('error', 'Harap isi email dan password.');
-            return;
-        }
-
-        displayMessage('info', isRegisterMode ? 'Mencoba mendaftar...' : 'Mencoba masuk...');
-        actionButton.disabled = true;
-
+        // --- DEKLARASI GLOBAL DARI LINGKUNGAN ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        let firebaseConfig = null;
         try {
+            firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        } catch (e) {
+            console.error("Gagal memparsing konfigurasi Firebase.");
+        }
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let auth = null;
+        let db = null;
+        let isAuthInitialized = false;
+
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const actionButton = document.getElementById('auth-action-button');
+        const toggleLink = document.getElementById('toggle-auth-mode');
+        const formTitle = document.getElementById('form-title');
+        const authMessage = document.getElementById('auth-message');
+
+        let isRegisterMode = false;
+
+        // --- FUNGSI UTILITY ---
+        function displayMessage(type, message) {
+            if (type === 'info') {
+                authMessage.className = 'p-3 mt-4 text-sm rounded-lg bg-blue-100 text-blue-700';
+            } else if (type === 'success') {
+                authMessage.className = 'p-3 mt-4 text-sm rounded-lg bg-green-100 text-green-700';
+            } else { // error
+                authMessage.className = 'p-3 mt-4 text-sm rounded-lg bg-red-100 text-red-700';
+            }
+            authMessage.textContent = message;
+        }
+
+        function toggleMode() {
+            isRegisterMode = !isRegisterMode;
             if (isRegisterMode) {
-                await createUserWithEmailAndPassword(auth, email, password);
-                // Redirect dilakukan oleh onAuthStateChanged listener
+                formTitle.textContent = 'Daftar Akun Baru';
+                actionButton.textContent = 'Daftar';
+                toggleLink.innerHTML = 'Sudah punya akun? <span class="font-semibold">Masuk</span>';
             } else {
-                await signInWithEmailAndPassword(auth, email, password);
-                // Redirect dilakukan oleh onAuthStateChanged listener
+                formTitle.textContent = 'Masuk ke Aplikasi';
+                actionButton.textContent = 'Masuk';
+                toggleLink.innerHTML = 'Belum punya akun? <span class="font-semibold">Daftar sekarang</span>';
+            }
+            authMessage.textContent = ''; // Hapus pesan saat ganti mode
+            // Aktifkan tombol jika Auth sudah siap
+            if (isAuthInitialized) {
+                actionButton.disabled = false;
+                actionButton.textContent = isRegisterMode ? 'Daftar' : 'Masuk';
+            } else {
+                actionButton.disabled = true;
+            }
+        }
+
+        // --- INISIALISASI FIREBASE ---
+        function initializeFirebase() {
+            // Cek Konfigurasi (jika kosong, jangan inisialisasi)
+            if (Object.keys(firebaseConfig).length === 0) {
+                displayMessage('error', 'KESALAHAN: Konfigurasi Firebase tidak ditemukan (variabel host kosong). Fitur Login dinonaktifkan.');
+                return;
             }
 
-        } catch (error) {
-            // Tangani error spesifik dari Firebase
-            const errorMessage = error.code ? `Auth Error: ${error.code.replace('auth/', '')}` : 'Terjadi kesalahan tidak terduga.';
-            displayMessage('error', errorMessage);
-            console.error('Login/Register Error:', error);
-        } finally {
-            // Tombol akan tetap nonaktif sementara menunggu redirect atau user mengklik lagi
-        }
-    });
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                isAuthInitialized = true;
+                
+                // Atur status tombol dan pesan
+                actionButton.disabled = false;
+                actionButton.textContent = isRegisterMode ? 'Daftar' : 'Masuk';
 
-    toggleLink.addEventListener('click', toggleMode);
-});
+                // Mencoba Sign In Otomatis menggunakan token (jika ada)
+                if (initialAuthToken) {
+                    signInWithCustomToken(auth, initialAuthToken).catch(e => {
+                        console.warn("Gagal sign in dengan token kustom. Mengizinkan login manual.", e);
+                    });
+                }
+                
+                // Listener Status Auth
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        // User sudah login, arahkan ke halaman utama
+                        displayMessage('success', 'Berhasil Login. Mengarahkan ke halaman utama...');
+                        setTimeout(() => { window.location.href = 'index(5).html'; }, 1000);
+                    }
+                });
+
+            } catch (e) {
+                displayMessage('error', `KESALAHAN FATAL: Gagal inisialisasi Firebase. ${e.message}`);
+                actionButton.disabled = true;
+            }
+        }
+
+        // --- PENANGANAN OTENTIKASI ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebase();
+            toggleMode(); // Inisialisasi mode awal
+
+            actionButton.addEventListener('click', async () => {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                if (!auth) {
+                    displayMessage('error', 'Auth Error: Layanan Otentikasi belum siap.');
+                    return;
+                }
+
+                if (!email || !password) {
+                    displayMessage('error', 'Harap isi email dan password.');
+                    return;
+                }
+
+                displayMessage('info', isRegisterMode ? 'Mencoba mendaftar...' : 'Mencoba masuk...');
+                actionButton.disabled = true;
+
+                try {
+                    if (isRegisterMode) {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                        // Redirect dilakukan oleh onAuthStateChanged listener
+                    } else {
+                        await signInWithEmailAndPassword(auth, email, password);
+                        // Redirect dilakukan oleh onAuthStateChanged listener
+                    }
+
+                } catch (error) {
+                    // Tangani error spesifik dari Firebase
+                    const errorMessage = error.code ? `Auth Error: ${error.code.replace('auth/', '')}` : 'Terjadi kesalahan tidak terduga.';
+                    displayMessage('error', errorMessage);
+                    console.error('Login/Register Error:', error);
+                } finally {
+                    actionButton.disabled = false;
+                }
+            });
+
+            toggleLink.addEventListener('click', toggleMode);
+        });
     </script>
 </body>
 </html>
